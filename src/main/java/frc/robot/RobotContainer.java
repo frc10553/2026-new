@@ -54,27 +54,26 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
 
-            drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
+        drivetrain.setDefaultCommand(
+                // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(() ->
                     drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with Y (forward)
                         .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with X (left)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
-            );
-
+        );
 
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+                drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+                point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
@@ -88,17 +87,6 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-
-        // shooter
-        joystick.povUp().onTrue(Commands.runOnce(() -> {
-            System.out.println("going");
-            shooter.startMotor();
-        }));
-
-        joystick.povUp().onFalse(Commands.runOnce(() -> {
-            System.out.println("not going");
-            shooter.stopMotor();
-        }));
 
         // shooter
         joystick.povUp().onTrue(Commands.runOnce(() -> {
