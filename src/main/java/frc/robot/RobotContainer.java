@@ -30,10 +30,10 @@ public class RobotContainer {
     private boolean practice = true;
     private boolean robotCentric;
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.RobotCentric robotDrive = new SwerveRequest.RobotCentric()
+    private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -61,7 +61,7 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(controller1.getLeftY() * MaxSpeed) // Drive forward
+                drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed) // Drive forward
                                                                                                      // with Y (forward)
                         .withVelocityY(controller1.getLeftX() * MaxSpeed) // Drive left with X (left)
                         .withRotationalRate(-controller1.getRightX() * MaxAngularRate) // Drive counterclockwise with
