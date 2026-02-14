@@ -28,6 +28,7 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     private double SlowAngularRate = RotationsPerSecond.of(0.25).in(RadiansPerSecond);
+    private boolean slowMode = false;
 
     // Platform drive methods
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
@@ -87,11 +88,8 @@ public class RobotContainer {
 
         // Slower drive toggle
         controller1.povDown().onTrue(Commands.runOnce(() -> {
-            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / 4;
-        }));
-
-        controller1.povDown().onFalse(Commands.runOnce(() -> {
-            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+            this.slowMode = !this.slowMode;
+            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
         // Shooter
