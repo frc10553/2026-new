@@ -88,7 +88,14 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         controller1.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+        // slower drive mode
+        controller1.povDown().onTrue(Commands.runOnce(() -> {
+            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / 4;
+        }));
+
+        controller1.povDown().onFalse(Commands.runOnce(() -> {
+            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        }));
 
         // shooter
         controller1.povUp().onTrue(Commands.runOnce(() -> {
@@ -100,6 +107,8 @@ public class RobotContainer {
             System.out.println("not going");
             shooter.stopMotor();
         }));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
