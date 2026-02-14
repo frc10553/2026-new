@@ -25,8 +25,8 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private double SlowAngularRate = RotationsPerSecond.of(0.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-    private boolean practice = true; 
-    private boolean robotCentric; 
+    private boolean practice = true;
+    private boolean robotCentric;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -53,17 +53,17 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        
+
             drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(() ->
                     drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with Y (forward)
                         .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with X (left)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-                )   
-            );   
-        
-        
+                )
+            );
+
+
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -88,6 +88,17 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // shooter
+        joystick.povUp().onTrue(Commands.runOnce(() -> {
+            System.out.println("going");
+            shooter.startMotor();
+        }));
+
+        joystick.povUp().onFalse(Commands.runOnce(() -> {
+            System.out.println("not going");
+            shooter.stopMotor();
+        }));
 
         // shooter
         joystick.povUp().onTrue(Commands.runOnce(() -> {
