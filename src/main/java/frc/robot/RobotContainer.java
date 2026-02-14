@@ -22,33 +22,37 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
-    private double SlowAngularRate = RotationsPerSecond.of(0.25).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                       // max angular velocity
-    private boolean practice = true;
-    private boolean robotCentric;
-    /* Setting up bindings for necessary control of the swerve drive platform */
+
+    // Maximum speed
+    // (is divided by 4 for slow mode)
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+    private double SlowAngularRate = RotationsPerSecond.of(0.25).in(RadiansPerSecond);
+
+    // Platform drive methods
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            // 10% deadband
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
     private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            // 10% deadband
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-    private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController controller1 = new CommandXboxController(0);
     // private final CommandXboxController controller2 = new
     // CommandXboxController(1);
     // ^^^ for use later
 
+    // Subsystems
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
     public final ShooterSubsystem shooter;
+
+    private final Telemetry logger = new Telemetry(MaxSpeed);
 
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
@@ -56,20 +60,14 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-
+        // +X is forward
+        // +Y is left
         drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed) // Drive forward
-                                                                                                     // with Y (forward)
-                        .withVelocityY(controller1.getLeftX() * MaxSpeed) // Drive left with X (left)
-                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                                                                                       // negative X (left)
-                ));
+                drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
+                        .withVelocityY(controller1.getLeftX() * MaxSpeed)
+                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
+        // Idle motors when disabled
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
@@ -78,17 +76,16 @@ public class RobotContainer {
         controller1.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-controller1.getLeftY(), -controller1.getLeftX()))));
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
+        // Process sysids
         controller1.back().and(controller1.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         controller1.back().and(controller1.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         controller1.start().and(controller1.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         controller1.start().and(controller1.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // reset the field-centric heading on left bumper press
+        // Re-center the field-centric heading
         controller1.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        // slower drive mode
+        // Slower drive toggle
         controller1.povDown().onTrue(Commands.runOnce(() -> {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / 4;
         }));
@@ -97,7 +94,7 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         }));
 
-        // shooter
+        // Shooter
         controller1.povUp().onTrue(Commands.runOnce(() -> {
             System.out.println("shooter is processing");
             shooter.startMotor();
