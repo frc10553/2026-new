@@ -20,5 +20,5 @@ public class ClimberSubsystem implements Subsystem {
 
     public void stopMotor() {
         motor.set(0);
-    } 
+    }
 }
