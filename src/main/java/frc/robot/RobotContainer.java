@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
@@ -45,18 +46,19 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final CommandXboxController controller1 = new CommandXboxController(0);
-    // private final CommandXboxController controller2 = new
-    // CommandXboxController(1);
+    private final CommandXboxController controller2 = new CommandXboxController(1);
     // ^^^ for use later
 
     // Subsystems
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final ShooterSubsystem shooter;
+    public final IntakeSubsystem intake; 
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-
+    
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
+        intake = new IntakeSubsystem();
         configureBindings();
     }
 
@@ -101,7 +103,18 @@ public class RobotContainer {
         controller1.povUp().onFalse(Commands.runOnce(() -> {
             System.out.println("not going");
             shooter.stopMotor();
-        }));
+        })); 
+
+        //intake 
+
+        controller2.y().onTrue(Commands.runOnce(() -> {
+            System.out.println("hhh");
+            intake.intakeStart();
+        })); 
+
+        controller2.y().onFalse(Commands.runOnce(() -> {
+            intake.intakeStop();
+        })); 
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

@@ -12,5 +12,6 @@ public class Constants {
         public static final int TRANSFER_BELT = 35;
 
         public static final int INTAKE_ARM = 36;
+        public static final int INTAKE_WHEELS = 37;
     }
 }
