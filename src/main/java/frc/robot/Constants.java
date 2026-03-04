@@ -11,4 +11,8 @@ public class Constants {
         public static final int TRANSFER_FOLLOW_INDEX = 34;
         public static final int TRANSFER_BELT = 35;
     }
+
+    // # of rotations for final climb
+    // NEED TO TUNE!!!
+    public static final int CLIMBER_FINAL_POSITION = 10;
 }
