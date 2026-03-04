@@ -19,4 +19,8 @@ public class Constants {
     public static enum HoodPositions {
         
     }
+
+    // # of rotations for final climb
+    // NEED TO TUNE!!!
+    public static final int CLIMBER_FINAL_POSITION = 10;
 }
