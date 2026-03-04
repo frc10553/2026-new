@@ -4,6 +4,7 @@ public class Constants {
     public static final class CanIDs {
         public static final int SHOOTER_LEFT_MOTOR = 30;
         public static final int SHOOTER_RIGHT_MOTOR = 31;
+        public static final int SHOOTER_HOOD = 38;
 
         public static final int CLIMBER_MOTOR = 32;
 
@@ -13,5 +14,9 @@ public class Constants {
 
         public static final int INTAKE_ARM = 36;
         public static final int INTAKE_WHEELS = 37;
+    }
+
+    public static enum HoodPositions {
+        
     }
 }
