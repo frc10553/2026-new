@@ -32,8 +32,8 @@ public class IntakeSubsystem implements Subsystem {
     }
 
     public void intakeStart() { 
-        // 3 VOLTS IS LIKE PERFECT???
-        intakeWheelMotor.setVoltage(SmartDashboard.getNumber("Intake voltage", 3));
+        // 4 VOLTS IS LIKE PERFECT???
+        intakeWheelMotor.setVoltage(SmartDashboard.getNumber("Intake voltage", 4));
     }
     
     public void intakeStop() {

@@ -27,7 +27,7 @@ public class ShooterSubsystem implements Subsystem {
 
         motor.getConfigurator().apply(slot0Configs);
 
-         hood = new SparkMax(Constants.CanIDs.SHOOTER_HOOD, MotorType.kBrushless);
+        hood = new SparkMax(Constants.CanIDs.SHOOTER_HOOD, MotorType.kBrushless);
         SmartDashboard.putNumber("Shooter Speed", this.defaultSpeed);
     }
 
