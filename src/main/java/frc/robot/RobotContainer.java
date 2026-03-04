@@ -116,6 +116,10 @@ public class RobotContainer {
             intake.intakeStop();
         })); 
 
+        controller2.x().onTrue(Commands.runOnce(() -> {
+            intake.armDeploy();
+        })); 
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
