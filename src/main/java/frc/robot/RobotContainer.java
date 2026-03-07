@@ -29,6 +29,7 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     private double SlowAngularRate = RotationsPerSecond.of(0.25).in(RadiansPerSecond);
     private boolean slowMode = false;
+    private boolean robotCentric = false;
 
     // Platform drive methods
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
@@ -64,10 +65,21 @@ public class RobotContainer {
     private void configureBindings() {
         // +X is forward
         // +Y is left
-        drivetrain.setDefaultCommand(
+        if (robotCentric) {
+            drivetrain.setDefaultCommand(
+                drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
+                        .withVelocityY(controller1.getLeftX() * MaxSpeed)
+                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+        } else {
+            drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
                         .withVelocityY(controller1.getLeftX() * MaxSpeed)
                         .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+        }
+
+        controller1.leftTrigger().onTrue(Commands.runOnce(() -> {
+            robotCentric = !robotCentric;
+        }));
 
         // Idle motors when disabled
         final var idle = new SwerveRequest.Idle();
