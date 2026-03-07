@@ -12,7 +12,6 @@ import frc.robot.Constants;
 public class IntakeSubsystem implements Subsystem {
     private final TalonFX armMotor;
     private final SparkMax intakeWheelMotor;
-    private boolean armDeployed = false;
 
     public IntakeSubsystem() {
         armMotor = new TalonFX(Constants.CanIDs.INTAKE_ARM);
@@ -21,14 +20,12 @@ public class IntakeSubsystem implements Subsystem {
         SmartDashboard.putNumber("Intake voltage", 4);
     }
 
-    public void armDeploy() {
-        if (armDeployed){
-            armMotor.setPosition(0);
-            armDeployed = false;
-        } else{
-            armMotor.setPosition(SmartDashboard.getNumber("Arm position", 0));
-            armDeployed = true;
-        }
+    public void armDeployOut() {
+        armMotor.setPosition(SmartDashboard.getNumber("Arm position", 0));
+    }
+
+    public void armTakeIn() {
+        armMotor.setPosition(0);
     }
 
     public void intakeStart() { 

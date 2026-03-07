@@ -94,29 +94,33 @@ public class RobotContainer {
         }));
 
         // Shooter
-        controller1.povUp().onTrue(Commands.runOnce(() -> {
+        controller2.rightBumper().onTrue(Commands.runOnce(() -> {
             System.out.println("shooter is processing");
             shooter.startMotor();
         }));
 
-        controller1.povUp().onFalse(Commands.runOnce(() -> {
+        controller2.rightBumper().onFalse(Commands.runOnce(() -> {
             System.out.println("not going");
             shooter.stopMotor();
         })); 
 
         //intake 
 
-        controller2.y().onTrue(Commands.runOnce(() -> {
+        controller2.leftBumper().onTrue(Commands.runOnce(() -> {
             System.out.println("hhh");
             intake.intakeStart();
         })); 
 
-        controller2.y().onFalse(Commands.runOnce(() -> {
+        controller2.leftBumper().onFalse(Commands.runOnce(() -> {
             intake.intakeStop();
         })); 
 
         controller2.x().onTrue(Commands.runOnce(() -> {
-            intake.armDeploy();
+            intake.armDeployOut();
+        })); 
+
+        controller2.y().onTrue(Commands.runOnce(() -> {
+            intake.armTakeIn();
         })); 
 
         drivetrain.registerTelemetry(logger::telemeterize);
