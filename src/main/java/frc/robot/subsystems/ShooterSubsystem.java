@@ -29,6 +29,7 @@ public class ShooterSubsystem implements Subsystem {
 
         hood = new SparkMax(Constants.CanIDs.SHOOTER_HOOD, MotorType.kBrushless);
         SmartDashboard.putNumber("Shooter Speed", this.defaultSpeed);
+        SmartDashboard.putNumber("Hood Position", 0);
     }
 
     public void startMotor() {
@@ -39,7 +40,7 @@ public class ShooterSubsystem implements Subsystem {
     }
 
     public void hoodPosition(Constants.HoodPositions hoodPosition) {
-
+        hood.getEncoder().setPosition(SmartDashboard.getNumber("Hood Position", 0));
     }
 
     public void stopMotor() {
