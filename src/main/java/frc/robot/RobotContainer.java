@@ -67,13 +67,13 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     /* Path follower */
-    private final SendableChooser<Command> autoChooser;
+//    private final SendableChooser<Command> autoChooser;
     
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
-        autoChooser = AutoBuilder.buildAutoChooser("Tests");
-        SmartDashboard.putData("Auto Mode", autoChooser);
+//        autoChooser = AutoBuilder.buildAutoChooser("Tests");
+//        SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
 
@@ -152,13 +152,15 @@ public class RobotContainer {
 
         controller2.y().onTrue(Commands.runOnce(() -> {
             intake.armTakeIn();
-        })); 
+        }));
+
+
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    public Command getAutonomousCommand() {
-        /* Run the path selected from the auto chooser */
-        return autoChooser.getSelected();
-    }
+//    public Command getAutonomousCommand() {
+//        /* Run the path selected from the auto chooser */
+////        return autoChooser.getSelected();
+//    }
 }
