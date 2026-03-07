@@ -8,13 +8,20 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.CommandSwerveDrivetrain;
@@ -55,11 +62,20 @@ public class RobotContainer {
     public final IntakeSubsystem intake; 
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+
+    /* Path follower */
+    private final SendableChooser<Command> autoChooser;
     
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
+        autoChooser = AutoBuilder.buildAutoChooser("Tests");
+        SmartDashboard.putData("Auto Mode", autoChooser);
+
         configureBindings();
+
+        // Warmup PathPlanner to avoid Java pauses
+        CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     }
 
     private void configureBindings() {
@@ -139,6 +155,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        /* Run the path selected from the auto chooser */
+        return autoChooser.getSelected();
     }
 }
