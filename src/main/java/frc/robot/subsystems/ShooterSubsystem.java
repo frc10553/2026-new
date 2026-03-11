@@ -18,12 +18,10 @@ public class ShooterSubsystem implements Subsystem {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     private final SparkMax feeder;
-    private final SparkMax hood;
     private final double defaultSpeed = 0.9;
 
     // constructor
     public ShooterSubsystem() {
-        SmartDashboard.putNumber("Hood Position", 0);
         SmartDashboard.putNumber("Shooter RPS", -100);
         SmartDashboard.putNumber("Shooter Arm P", 0.02);
         SmartDashboard.putNumber("Shooter Arm I", 0);
@@ -46,7 +44,6 @@ public class ShooterSubsystem implements Subsystem {
 
         leftMotor.setControl(new CoastOut());
 
-        hood = new SparkMax(Constants.CanIDs.SHOOTER_HOOD, MotorType.kBrushless);
     }
 
     public void startMotor() {
@@ -61,16 +58,20 @@ public class ShooterSubsystem implements Subsystem {
 
         final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
         leftMotor.setControl(m_request.withVelocity(SmartDashboard.getNumber("Shooter RPS", -100)));
-
-        feeder.setVoltage(SmartDashboard.getNumber("Feeder Volts", 3));
     }
 
-    public void hoodPosition(Constants.HoodPositions hoodPosition) {
-        hood.getEncoder().setPosition(SmartDashboard.getNumber("Hood Position", 0));
+    public void startFeeder() {
+        feeder.setVoltage(SmartDashboard.getNumber("Feeder Volts", 3));
+
+    }
+
+    public void stopFeeder() {
+        feeder.setVoltage(0);
     }
 
     public void stopMotor() {
         leftMotor.set(0);
         feeder.set(0);
     }
+
 }

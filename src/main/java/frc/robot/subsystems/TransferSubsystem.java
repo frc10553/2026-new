@@ -1,20 +1,26 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 public class TransferSubsystem implements Subsystem {
-    private final TalonFX leadIndexMotor;
-    private final TalonFX followIndexMotor;
-    private final TalonFX beltMotor;
+    private final SparkMax beltMotor;
     private final double defaultSpeed = 0.9;
 
     public TransferSubsystem() {
-        leadIndexMotor = new TalonFX(Constants.CanIDs.TRANSFER_LEAD_INDEX);
-        followIndexMotor = new TalonFX(Constants.CanIDs.TRANSFER_FOLLOW_INDEX);
-        beltMotor = new TalonFX(Constants.CanIDs.TRANSFER_BELT);
+        beltMotor = new SparkMax(Constants.CanIDs.TRANSFER_BELT, MotorType.kBrushless);
         SmartDashboard.putNumber("Transfer Speed", this.defaultSpeed);
     }
+
+    public void startMotor() {
+        beltMotor.setVoltage(SmartDashboard.getNumber("Transfer Speed", defaultSpeed));
+    }
+
+    public void stopMotor() {
+        beltMotor.setVoltage(0);
+    }
+    
 }
