@@ -42,7 +42,7 @@ public class RobotContainer {
     private boolean robotCentric = false;
 
     private boolean limelightToggle = true;
-    
+
     // Basic targeting data
     private double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
     private double ty = LimelightHelpers.getTY("");  // Vertical offset from crosshair to target in degrees
@@ -72,14 +72,14 @@ public class RobotContainer {
     public final ShooterSubsystem shooter;
     public final IntakeSubsystem intake;
     public final TransferSubsystem transfer;
-    public final ClimberSubsystem climber; 
+    public final ClimberSubsystem climber;
     public final HoodSubsystem hood;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     /* Path follower */
 //    private final SendableChooser<Command> autoChooser;
-    
+
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
@@ -112,14 +112,14 @@ public class RobotContainer {
             robotCentric = !robotCentric;
             if (robotCentric) {
                 drivetrain.setDefaultCommand(
-                    drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                            .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                            .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                        drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
+                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             } else {
                 drivetrain.setDefaultCommand(
-                    drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                            .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                            .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                        drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
+                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             }
         }));
 
@@ -161,16 +161,16 @@ public class RobotContainer {
             shooter.stopMotor();
             shooter.stopFeeder();
             transfer.stopMotor();
-        })); 
+        }));
 
         // Hood
 
         hood.setDefaultCommand(
-            Commands.runOnce(() -> {
-                if (limelightToggle) {
+                Commands.runOnce(() -> {
+                    if (limelightToggle) {
 
-                }
-            })
+                    }
+                })
         );
 
         controller2.a().onTrue(Commands.runOnce(() -> {
@@ -200,24 +200,23 @@ public class RobotContainer {
         controller2.leftBumper().onTrue(Commands.runOnce(() -> {
             System.out.println("hhh");
             intake.intakeStart();
-        })); 
+        }));
 
         controller2.leftBumper().onFalse(Commands.runOnce(() -> {
             intake.intakeStop();
-        })); 
+        }));
 
         controller2.x().onTrue(Commands.runOnce(() -> {
             intake.armDeployOut();
-        })); 
+        }));
 
         controller2.y().onTrue(Commands.runOnce(() -> {
             intake.armTakeIn();
         }));
 
         // Climber
-        controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
-            climber.climb();
-        }));
+        controller2.leftTrigger().onTrue(Commands.runOnce(climber::startClimbing));
+        controller2.leftTrigger().onFalse(Commands.runOnce(climber::stopClimbing));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
