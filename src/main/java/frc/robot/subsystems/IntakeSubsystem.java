@@ -39,6 +39,6 @@ public class IntakeSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm position", armMotor.getRotorPosition().getValue().magnitude());
+        SmartDashboard.putNumber("intakePosition", armMotor.getRotorPosition().getValue().magnitude());
     }
 }

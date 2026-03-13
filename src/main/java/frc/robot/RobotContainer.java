@@ -52,13 +52,11 @@ public class RobotContainer {
     // Platform drive methods
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
             // 10% deadband
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
             // 10% deadband
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -102,35 +100,24 @@ public class RobotContainer {
     private void configureBindings() {
         // +X is forward
         // +Y is left 
-        //This is the driving control
-        drivetrain.setDefaultCommand(
-                drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                        .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+        // This is the driving control
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed).withVelocityY(controller1.getLeftX() * MaxSpeed).withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
 
         controller1.leftTrigger().onTrue(Commands.runOnce(() -> {
             robotCentric = !robotCentric;
             if (robotCentric) {
-                drivetrain.setDefaultCommand(
-                        drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed).withVelocityY(controller1.getLeftX() * MaxSpeed).withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             } else {
-                drivetrain.setDefaultCommand(
-                        drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed).withVelocityY(controller1.getLeftX() * MaxSpeed).withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             }
         }));
 
         // Idle motors when disabled
         final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+        RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         controller1.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        controller1.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(new Rotation2d(-controller1.getLeftY(), -controller1.getLeftX()))));
+        controller1.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-controller1.getLeftY(), -controller1.getLeftX()))));
 
         // Process sysids
         controller1.back().and(controller1.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -139,7 +126,7 @@ public class RobotContainer {
         controller1.start().and(controller1.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Re-center the field-centric heading
-        controller1.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        controller1.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         // Slower drive toggle
         controller1.povDown().onTrue(Commands.runOnce(() -> {
@@ -165,29 +152,22 @@ public class RobotContainer {
 
         // Hood
 
-        hood.setDefaultCommand(
-                Commands.runOnce(() -> {
-                    if (limelightToggle) {
+        hood.setDefaultCommand(Commands.runOnce(() -> {
+            if (limelightToggle) {
 
-                    }
-                })
-        );
+            }
+        }, hood));
 
-        controller2.a().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPosition();
-
-        }));
-
-        controller2.b().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPosition();
-        }));
+        controller2.a().onTrue(Commands.runOnce(hood::setHoodPosition));
+        // what is this? -sorin
+        controller2.b().onTrue(Commands.runOnce(hood::setHoodPosition));
 
         controller2.povUp().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(SmartDashboard.getNumber("hoodAngleAdjustmebt", 0.25));
+            hood.changeHoodPosition(SmartDashboard.getNumber("hoodAngleAdjustment", 0.25));
         }));
 
         controller2.povDown().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(-SmartDashboard.getNumber("hoodAngleAdjustmebt", 0.25));
+            hood.changeHoodPosition(-SmartDashboard.getNumber("hoodAngleAdjustment", 0.25));
         }));
 
         controller2.povLeft().onTrue(Commands.runOnce(() -> {
@@ -195,24 +175,17 @@ public class RobotContainer {
         }));
 
 
-        //intake 
-
+        // Intake
         controller2.leftBumper().onTrue(Commands.runOnce(() -> {
             System.out.println("hhh");
             intake.intakeStart();
         }));
 
-        controller2.leftBumper().onFalse(Commands.runOnce(() -> {
-            intake.intakeStop();
-        }));
+        controller2.leftBumper().onFalse(Commands.runOnce(intake::intakeStop));
 
-        controller2.x().onTrue(Commands.runOnce(() -> {
-            intake.armDeployOut();
-        }));
+        controller2.x().onTrue(Commands.runOnce(intake::armDeployOut));
 
-        controller2.y().onTrue(Commands.runOnce(() -> {
-            intake.armTakeIn();
-        }));
+        controller2.y().onTrue(Commands.runOnce(intake::armTakeIn));
 
         // Climber
         controller2.leftTrigger().onTrue(Commands.runOnce(climber::startClimbing));
