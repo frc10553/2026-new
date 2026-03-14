@@ -12,10 +12,11 @@ public class ClimberSubsystem implements Subsystem {
     public ClimberSubsystem() {
         motor = new TalonFX(Constants.CanIDs.CLIMBER_MOTOR);
         SmartDashboard.putNumber("Climber Speed", this.defaultSpeed);
+        SmartDashboard.putBoolean("invertClimber", false);
     }
 
     public void startClimbing() {
-        motor.set(defaultSpeed);
+        motor.set(SmartDashboard.getNumber("Climber Speed", defaultSpeed));
     }
 
     public void stopClimbing() {
