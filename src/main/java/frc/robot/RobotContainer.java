@@ -92,8 +92,9 @@ public class RobotContainer {
 
         // Warmup PathPlanner to avoid Java pauses
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
-        SmartDashboard.putNumber("waitSeconds", 2);
+        SmartDashboard.putNumber("waitSeconds", 2.0);
         SmartDashboard.putNumber("hoodAngleAdjustment", 0.25);
+        SmartDashboard.putNumber("ClimbPosition", 0.0);
     }
 
 
@@ -188,9 +189,14 @@ public class RobotContainer {
         controller2.y().onTrue(Commands.runOnce(intake::armTakeIn));
 
         // Climber
-        controller2.leftTrigger().onTrue(Commands.runOnce(climber::startClimbing));
-        controller2.leftTrigger().onFalse(Commands.runOnce(climber::stopClimbing));
+        controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
+            climber.setClimbPosition(SmartDashboard.getNumber("ClimbPosition", 0.0));
+        }));
 
+          controller2.leftTrigger().onFalse(Commands.runOnce(() -> {
+            climber.setClimbPosition(0.0);
+        }));
+       
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

@@ -15,6 +15,10 @@ public class ClimberSubsystem implements Subsystem {
         SmartDashboard.putBoolean("invertClimber", false);
     }
 
+    public void setClimbPosition(double pos) {
+        motor.setPosition(pos);
+    }
+
     public void startClimbing() {
         motor.set(SmartDashboard.getNumber("Climber Speed", defaultSpeed));
     }
