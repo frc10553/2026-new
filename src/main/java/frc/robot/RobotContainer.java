@@ -32,6 +32,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 
+
 public class RobotContainer {
 
     // Maximum speed
@@ -146,24 +147,9 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
-        // Shooter
+        // Shooter — runs while right bumper is held, stops everything on release
         controller2.rightBumper()
-            .onTrue(Commands.runOnce(() -> {
-                System.out.println("shooter is processing");
-                shooter.startMotor(false);
-            })
-            .andThen(Commands.waitSeconds(0.5)) //determined expirimentally
-            .andThen(Commands.runOnce(() -> {
-                shooter.startFeeder(false);
-                transfer.startMotor();
-            })));
-
-        controller2.rightBumper().onFalse(Commands.runOnce(() -> {
-            System.out.println("not going");
-            shooter.stopMotor();
-            shooter.stopFeeder();
-            transfer.stopMotor();
-        }));
+            .whileTrue(shooter.shoot(transfer));
 
         // Feeding mode
         controller2.rightTrigger()

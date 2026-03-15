@@ -9,8 +9,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 
@@ -38,7 +39,8 @@ public class ShooterSubsystem implements Subsystem {
         slot0Configs.kD = SmartDashboard.getNumber("Shooter Arm D", 0); // no output for error derivative
 
         rightMotor.getConfigurator().apply(slot0Configs);
-        //leftMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+        // leftMotor.setControl(new Follower(leftMotor.getDeviceID(),
+        // MotorAlignmentValue.Aligned));
 
         rightMotor.setControl(new CoastOut());
 
@@ -55,7 +57,7 @@ public class ShooterSubsystem implements Subsystem {
         rightMotor.getConfigurator().apply(slot0Configs);
 
         final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); //determined expirimentally
+        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); // determined expirimentally
     }
 
     public void startFeeder(boolean feeding) {
@@ -71,4 +73,32 @@ public class ShooterSubsystem implements Subsystem {
         feeder.set(0);
     }
 
+    public Command shoot(TransferSubsystem transfer) {
+        return Commands.sequence(
+                Commands.runOnce(() -> startMotor(false), this),
+                // wait for motors to get up to speed
+                Commands.waitSeconds(0.5),
+                Commands.startEnd(
+                        // start
+                        () -> {
+                            startFeeder(false);
+                            transfer.startMotor();
+                        },
+
+                        // end
+                        () -> {
+                            stopMotor();
+                            stopFeeder();
+                            transfer.stopMotor();
+                        },
+                        this, transfer))
+
+                // still stops the motors even if this exits before the waitSeconds finishes
+                // (from what I understand)
+                .finallyDo(() -> {
+                    stopMotor();
+                    stopFeeder();
+                    transfer.stopMotor();
+                });
+    }
 }
