@@ -32,7 +32,6 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 
-
 public class RobotContainer {
 
     // Maximum speed
@@ -149,27 +148,18 @@ public class RobotContainer {
 
         // Shooter — runs while right bumper is held, stops everything on release
         controller2.rightBumper()
-            .whileTrue(shooter.shoot(transfer));
+                .whileTrue(shooter.shoot(transfer));
 
-        // Feeding mode
+        // Feeding mode — runs while right trigger is held, stops everything on release
         controller2.rightTrigger()
-            .onTrue(Commands.runOnce(() -> {
-                System.out.println("shooter is processing");
-                shooter.startMotor(true);
-                hood.setHoodPosition(SmartDashboard.getNumber("hoodFeedingPosition",0 ));
-            })
-            .andThen(Commands.waitSeconds(0.5)) //determined expirimentally
-            .andThen(Commands.runOnce(() -> {
-                shooter.startFeeder(true);
-                transfer.startMotor();
-            })));
+                .whileTrue(shooter.feed(transfer, hood));
 
         // Hood
 
         // hood.setDefaultCommand(Commands.runOnce(() -> {
-        //     if (limelightToggle) {
+        // if (limelightToggle) {
 
-        //     }
+        // }
         // }, hood));
 
         climber.setDefaultCommand(Commands.runOnce(() -> {
@@ -191,14 +181,14 @@ public class RobotContainer {
         }));
 
         controller2.povUp().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(0.75); //Expirimentally determined manual adjust
+            hood.changeHoodPosition(0.75); // Expirimentally determined manual adjust
         }));
         controller2.povUp().onFalse(Commands.runOnce(() -> {
             hood.changeHoodPosition(0.0);
         }));
 
         controller2.povDown().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(-0.75); //Expirimentally determined manual adjust
+            hood.changeHoodPosition(-0.75); // Expirimentally determined manual adjust
         }));
         controller2.povDown().onFalse(Commands.runOnce(() -> {
             hood.changeHoodPosition(0.0);

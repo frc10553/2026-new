@@ -101,4 +101,32 @@ public class ShooterSubsystem implements Subsystem {
                     transfer.stopMotor();
                 });
     }
+
+    public Command feed(TransferSubsystem transfer, HoodSubsystem hood) {
+        return Commands.sequence(
+                Commands.runOnce(() -> {
+                    startMotor(true);
+                    hood.setHoodPosition(SmartDashboard.getNumber("hoodFeedingPosition", 0));
+                }, this),
+                Commands.waitSeconds(0.5),
+                Commands.startEnd(
+                        // start
+                        () -> {
+                            startFeeder(true);
+                            transfer.startMotor();
+                        },
+
+                        // end
+                        () -> {
+                            stopMotor();
+                            stopFeeder();
+                            transfer.stopMotor();
+                        },
+                        this, transfer))
+                .finallyDo(() -> {
+                    stopMotor();
+                    stopFeeder();
+                    transfer.stopMotor();
+                });
+    }
 }
