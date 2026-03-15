@@ -211,15 +211,8 @@ public class RobotContainer {
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
 
         // Climber
-        // controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
-        // climber.setClimbPosition(SmartDashboard.getNumber("Climb Position", 0.0));
-        // }));
-
-        // controller2.leftTrigger().onFalse(Commands.runOnce(() -> {
-        // climber.setClimbPosition(0.0);
-        // }));
-        controller2.povRight().whileTrue(Commands.runOnce(climber::startClimbing));
-        controller2.povRight().onFalse(Commands.runOnce(climber::stopClimbing));
+        // Press once to go all the way up, press again to dip down
+        controller2.povRight().onTrue(climber.climb());
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
