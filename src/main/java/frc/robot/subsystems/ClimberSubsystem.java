@@ -12,7 +12,7 @@ public class ClimberSubsystem implements Subsystem {
     public ClimberSubsystem() {
         motor = new TalonFX(Constants.CanIDs.CLIMBER_MOTOR);
         SmartDashboard.putNumber("Climber Speed", this.defaultSpeed);
-        SmartDashboard.putBoolean("invertClimber", false);
+        SmartDashboard.putNumber("Climber Rotations", motor.getRotorPosition().getValue().magnitude());
     }
 
     public void setClimbPosition(double pos) {
@@ -20,15 +20,20 @@ public class ClimberSubsystem implements Subsystem {
     }
 
     public void startClimbing() {
-        motor.set(SmartDashboard.getNumber("Climber Speed", defaultSpeed));
+        // runs periodically
+
+        if (motor.getRotorPosition().getValue().magnitude() < 147.0) {
+            motor.set(SmartDashboard.getNumber("Climber Speed", defaultSpeed));
+        } else {
+            motor.setVoltage(0.0);
+        }
     }
 
     public void stopClimbing() {
-        motor.set(0);
+        motor.setPosition(91.192);
     }
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Climber Rotations", motor.getRotorPosition().getValue().magnitude());
+    public double getEncoderPosition() {
+        return motor.getRotorPosition().getValueAsDouble();
     }
 }

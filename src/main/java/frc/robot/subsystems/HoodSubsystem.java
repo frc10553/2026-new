@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.wpilibj.Timer;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
@@ -14,21 +14,24 @@ public class HoodSubsystem implements Subsystem{
 
     // constructor
     public HoodSubsystem() {
-        SmartDashboard.putNumber("Hood Position", 0);
-
         hood = new SparkMax(Constants.CanIDs.SHOOTER_HOOD, MotorType.kBrushless);
     }
 
-    public void setHoodPosition() {
-        hood.getEncoder().setPosition(SmartDashboard.getNumber("Hood Position", 0) / 360.0 * hoodGearRatio);
+    // pos is in angles
+    public void setHoodPosition(double pos) {
+        hood.getEncoder().setPosition(pos);
     }
 
     public void changeHoodPosition(double hoodValue) {
-        hood.getEncoder().setPosition(hood.getEncoder().getPosition() + (hoodValue / 360.0 * hoodGearRatio));
+        hood.setVoltage(hoodValue);
     }
 
     public void setLimelightHoodPosition(double angle) {
-        hood.getEncoder().setPosition(angle / 360.0 * hoodGearRatio);
+        hood.getEncoder().setPosition(angle);
         
+    }
+
+    public double getEncoderPosition() {
+        return hood.getEncoder().getPosition();
     }
 }

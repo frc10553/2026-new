@@ -17,24 +17,30 @@ public class IntakeSubsystem implements Subsystem {
         armMotor = new TalonFX(Constants.CanIDs.INTAKE_ARM);
         intakeWheelMotor = new SparkMax(Constants.CanIDs.INTAKE_WHEELS, MotorType.kBrushless);
         SmartDashboard.putNumber("Arm position", 0);
-        SmartDashboard.putNumber("Intake voltage", 4);
     }
 
     public void armDeployOut() {
-        armMotor.setPosition(SmartDashboard.getNumber("Arm position", 0));
+        armMotor.setVoltage(SmartDashboard.getNumber("Arm position", 0));
+    }
+
+    public void armStop() {
+        armMotor.setVoltage(0.0);
     }
 
     public void armTakeIn() {
         armMotor.setPosition(0);
     }
 
-    public void intakeStart() { 
-        // 4 VOLTS IS LIKE PERFECT???
-        intakeWheelMotor.setVoltage(SmartDashboard.getNumber("Intake voltage", 4));
+    public void intakeStart(double volts) { 
+        intakeWheelMotor.setVoltage(volts);
     }
     
     public void intakeStop() {
         intakeWheelMotor.setVoltage(0); 
+    }
+
+    public double getEncoderPosition() {
+        return armMotor.getRotorPosition().getValueAsDouble();
     }
 
     @Override

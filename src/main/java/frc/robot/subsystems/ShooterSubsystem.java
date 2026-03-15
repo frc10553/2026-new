@@ -22,11 +22,9 @@ public class ShooterSubsystem implements Subsystem {
 
     // constructor
     public ShooterSubsystem() {
-        SmartDashboard.putNumber("Shooter RPS", -100);
         SmartDashboard.putNumber("Shooter Arm P", 0.02);
         SmartDashboard.putNumber("Shooter Arm I", 0);
         SmartDashboard.putNumber("Shooter Arm D", 0);
-        SmartDashboard.putNumber("Feeder Volts", 3);
 
         leftMotor = new TalonFX(Constants.CanIDs.SHOOTER_LEFT_MOTOR);
         rightMotor = new TalonFX(Constants.CanIDs.SHOOTER_RIGHT_MOTOR);
@@ -35,34 +33,33 @@ public class ShooterSubsystem implements Subsystem {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
         slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kP = SmartDashboard.getNumber("Shooter Arm P", 0); // An error of 1 rps results in 0.11 V output
-        slot0Configs.kI = SmartDashboard.getNumber("Shooter Arm I", 0); // no output for integrated error
-        slot0Configs.kD = SmartDashboard.getNumber("Shooter Arm D", 0); // no output for error derivative
-
-        leftMotor.getConfigurator().apply(slot0Configs);
-        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Aligned));
-
-        leftMotor.setControl(new CoastOut());
-
-    }
-
-    public void startMotor() {
-        var slot0Configs = new Slot0Configs();
-        slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
-        slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
         slot0Configs.kP = SmartDashboard.getNumber("Shooter Arm P", 0.02); // An error of 1 rps results in 0.11 V output
         slot0Configs.kI = SmartDashboard.getNumber("Shooter Arm I", 0); // no output for integrated error
         slot0Configs.kD = SmartDashboard.getNumber("Shooter Arm D", 0); // no output for error derivative
 
-        leftMotor.getConfigurator().apply(slot0Configs);
+        rightMotor.getConfigurator().apply(slot0Configs);
+        //leftMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
-        final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-        leftMotor.setControl(m_request.withVelocity(SmartDashboard.getNumber("Shooter RPS", -100)));
+        rightMotor.setControl(new CoastOut());
+
     }
 
-    public void startFeeder() {
-        feeder.setVoltage(SmartDashboard.getNumber("Feeder Volts", 3));
+    public void startMotor(boolean feeding) {
+        var slot0Configs = new Slot0Configs();
+        slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
+        slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kP = 0.02; // An error of 1 rps results in 0.11 V output
+        slot0Configs.kI = 0.0; // no output for integrated error
+        slot0Configs.kD = 0.0; // no output for error derivative
 
+        rightMotor.getConfigurator().apply(slot0Configs);
+
+        final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
+        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); //determined expirimentally
+    }
+
+    public void startFeeder(boolean feeding) {
+        feeder.setVoltage(feeding ? -7 : -8);
     }
 
     public void stopFeeder() {
@@ -70,7 +67,7 @@ public class ShooterSubsystem implements Subsystem {
     }
 
     public void stopMotor() {
-        leftMotor.set(0);
+        rightMotor.set(0);
         feeder.set(0);
     }
 
