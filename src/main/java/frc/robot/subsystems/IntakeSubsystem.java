@@ -6,6 +6,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 
@@ -31,12 +33,10 @@ public class IntakeSubsystem implements Subsystem {
         armMotor.setPosition(0);
     }
 
-    public void intakeStart(double volts) { 
-        intakeWheelMotor.setVoltage(volts);
-    }
-    
-    public void intakeStop() {
-        intakeWheelMotor.setVoltage(0); 
+    public Command runIntake(double volts) {
+        return Commands.startEnd(
+                () -> intakeWheelMotor.setVoltage(volts),
+                () -> intakeWheelMotor.setVoltage(0));
     }
 
     public double getEncoderPosition() {

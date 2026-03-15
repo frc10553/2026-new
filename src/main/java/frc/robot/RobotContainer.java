@@ -203,25 +203,12 @@ public class RobotContainer {
             SmartDashboard.putNumber("Intake Rotations", intake.getEncoderPosition());
         }, intake));
 
-        controller2.leftBumper().onTrue(Commands.runOnce(() -> {
-            intake.intakeStart(2.5);
-        }));
-        controller2.leftBumper().onFalse(Commands.runOnce(intake::intakeStop));
+        controller2.leftBumper().whileTrue(intake.runIntake(2.5));
+        controller2.leftTrigger().whileTrue(intake.runIntake(4));
+        controller2.start().whileTrue(intake.runIntake(11));
 
-        controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
-            intake.intakeStart(4);
-        }));
-        controller2.leftTrigger().onFalse(Commands.runOnce(intake::intakeStop));
-
-        controller2.start().onTrue(Commands.runOnce(() -> {
-            intake.intakeStart(11);
-        }));
-        controller2.start().onFalse(Commands.runOnce(intake::intakeStop));
-
-        controller2.x().onTrue(Commands.runOnce(intake::armDeployOut));
-        controller2.x().onTrue(Commands.runOnce(intake::armStop));
-
-        controller2.y().onTrue(Commands.runOnce(intake::armTakeIn));
+        // Deploy arm (in theory)
+        controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
 
         // Climber
         // controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
