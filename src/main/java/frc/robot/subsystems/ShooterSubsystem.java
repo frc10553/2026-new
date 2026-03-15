@@ -23,9 +23,9 @@ public class ShooterSubsystem implements Subsystem {
 
     // constructor
     public ShooterSubsystem() {
-        SmartDashboard.putNumber("Shooter Arm P", 0.02);
-        SmartDashboard.putNumber("Shooter Arm I", 0);
-        SmartDashboard.putNumber("Shooter Arm D", 0);
+        SmartDashboard.putNumber("Shooter P", 0.02);
+        SmartDashboard.putNumber("Shooter I", 0);
+        SmartDashboard.putNumber("Shooter D", 0);
 
         leftMotor = new TalonFX(Constants.CanIDs.SHOOTER_LEFT_MOTOR);
         rightMotor = new TalonFX(Constants.CanIDs.SHOOTER_RIGHT_MOTOR);
@@ -34,9 +34,9 @@ public class ShooterSubsystem implements Subsystem {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
         slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kP = SmartDashboard.getNumber("Shooter Arm P", 0.02); // An error of 1 rps results in 0.11 V output
-        slot0Configs.kI = SmartDashboard.getNumber("Shooter Arm I", 0); // no output for integrated error
-        slot0Configs.kD = SmartDashboard.getNumber("Shooter Arm D", 0); // no output for error derivative
+        slot0Configs.kP = SmartDashboard.getNumber("Shooter P", 0.02); // An error of 1 rps results in 0.11 V output
+        slot0Configs.kI = SmartDashboard.getNumber("Shooter I", 0); // no output for integrated error
+        slot0Configs.kD = SmartDashboard.getNumber("Shooter D", 0); // no output for error derivative
 
         rightMotor.getConfigurator().apply(slot0Configs);
         // leftMotor.setControl(new Follower(leftMotor.getDeviceID(),
@@ -106,7 +106,7 @@ public class ShooterSubsystem implements Subsystem {
         return Commands.sequence(
                 Commands.runOnce(() -> {
                     startMotor(true);
-                    hood.setHoodPosition(SmartDashboard.getNumber("hoodFeedingPosition", 0));
+                    hood.setHoodPosition(SmartDashboard.getNumber("Hood Feeding Position", 0));
                 }, this),
                 Commands.waitSeconds(0.5),
                 Commands.startEnd(

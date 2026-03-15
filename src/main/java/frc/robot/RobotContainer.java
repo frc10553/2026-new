@@ -94,8 +94,8 @@ public class RobotContainer {
 
         // Warmup PathPlanner to avoid Java pauses
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
-        SmartDashboard.putNumber("hoodAngleAdjustment", 0.25);
-        SmartDashboard.putNumber("ClimbPosition", 0.0);
+        SmartDashboard.putNumber("Hood Angle Adjustment", 0.25);
+        SmartDashboard.putNumber("Climb Position", 0.0);
         SmartDashboard.putNumber("Hood Position", 0);
         SmartDashboard.getNumber("Far Hood Position", 0);
     }
@@ -200,7 +200,7 @@ public class RobotContainer {
 
         // Intake
         intake.setDefaultCommand(Commands.runOnce(() -> {
-            SmartDashboard.putNumber("Hood Rotations", intake.getEncoderPosition());
+            SmartDashboard.putNumber("Intake Rotations", intake.getEncoderPosition());
         }, intake));
 
         controller2.leftBumper().onTrue(Commands.runOnce(() -> {
@@ -225,7 +225,7 @@ public class RobotContainer {
 
         // Climber
         // controller2.leftTrigger().onTrue(Commands.runOnce(() -> {
-        // climber.setClimbPosition(SmartDashboard.getNumber("ClimbPosition", 0.0));
+        // climber.setClimbPosition(SmartDashboard.getNumber("Climb Position", 0.0));
         // }));
 
         // controller2.leftTrigger().onFalse(Commands.runOnce(() -> {

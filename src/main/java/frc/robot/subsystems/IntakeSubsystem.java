@@ -16,11 +16,11 @@ public class IntakeSubsystem implements Subsystem {
     public IntakeSubsystem() {
         armMotor = new TalonFX(Constants.CanIDs.INTAKE_ARM);
         intakeWheelMotor = new SparkMax(Constants.CanIDs.INTAKE_WHEELS, MotorType.kBrushless);
-        SmartDashboard.putNumber("Arm position", 0);
+        SmartDashboard.putNumber("Arm Position", 0);
     }
 
     public void armDeployOut() {
-        armMotor.setVoltage(SmartDashboard.getNumber("Arm position", 0));
+        armMotor.setVoltage(SmartDashboard.getNumber("Arm Position", 0));
     }
 
     public void armStop() {
@@ -45,6 +45,6 @@ public class IntakeSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("intakePosition", armMotor.getRotorPosition().getValue().magnitude());
+        SmartDashboard.putNumber("Intake Position", armMotor.getRotorPosition().getValue().magnitude());
     }
 }
