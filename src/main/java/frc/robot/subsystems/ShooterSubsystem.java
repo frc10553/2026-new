@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants.HoodPositions;
 import frc.robot.Constants;
 
 public class ShooterSubsystem implements Subsystem {
@@ -106,7 +107,7 @@ public class ShooterSubsystem implements Subsystem {
         return Commands.sequence(
                 Commands.runOnce(() -> {
                     startMotor(true);
-                    hood.setHoodPosition(SmartDashboard.getNumber("Hood Feeding Position", 0));
+                    hood.setHoodPreset(HoodPositions.FEEDING);
                 }, this),
                 Commands.waitSeconds(0.5),
                 Commands.startEnd(

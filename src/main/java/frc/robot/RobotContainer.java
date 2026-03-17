@@ -31,6 +31,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.Constants.HoodPositions;
 
 public class RobotContainer {
 
@@ -172,12 +173,12 @@ public class RobotContainer {
 
         // hood shooting not as far
         controller2.a().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPosition(SmartDashboard.getNumber("Hood Position", 0));
+            hood.setHoodPreset(HoodPositions.NEAR_SHOT);
         }));
 
         // hood shooting far
         controller2.b().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPosition(SmartDashboard.getNumber("Far Hood Position", 0));
+            hood.setHoodPreset(HoodPositions.FAR_SHOT);
         }));
 
         controller2.povUp().onTrue(Commands.runOnce(() -> {

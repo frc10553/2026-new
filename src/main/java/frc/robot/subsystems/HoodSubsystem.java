@@ -7,10 +7,10 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.Constants.HoodPositions;
 
 public class HoodSubsystem implements Subsystem{
     private final SparkMax hood;
-    private final double hoodGearRatio = ((40.0 / 15.0) * 25.0); // 66.67 rotations of motor is one rotation of axle
 
     // constructor
     public HoodSubsystem() {
@@ -26,9 +26,13 @@ public class HoodSubsystem implements Subsystem{
         hood.setVoltage(hoodValue);
     }
 
+    /** Set the hood to a preset position (converts degrees to motor rotations). */
+    public void setHoodPreset(HoodPositions preset) {
+        hood.getEncoder().setPosition(preset.toRotations());
+    }
+
     public void setLimelightHoodPosition(double angle) {
         hood.getEncoder().setPosition(angle);
-        
     }
 
     public double getEncoderPosition() {

@@ -17,11 +17,27 @@ public class Constants {
         public static final int INTAKE_WHEELS = 37;
     }
 
-    public static enum HoodPositions {
+    public static final double HOOD_GEAR_RATIO = 5.0 * 5.0 * (40 / 15); // 5:1 x 5:1 gearbox + 40/15 tooth gear ratio
 
+    public static enum HoodPositions {
+        STOW(0),
+        NEAR_SHOT(0),
+        FAR_SHOT(0),
+        FEEDING(0);
+
+        private final double angleDegrees;
+
+        HoodPositions(double angleDegrees) {
+            this.angleDegrees = angleDegrees;
+        }
+
+        public double toRotations() {
+            return (angleDegrees / 360.0) * HOOD_GEAR_RATIO;
+        }
     }
 
     // # of rotations for final climb
     // NEED TO TUNE!!!
+    // never mind we don't
     public static final int CLIMBER_FINAL_POSITION = 10;
 }
