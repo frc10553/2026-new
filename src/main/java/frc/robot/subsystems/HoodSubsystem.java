@@ -47,7 +47,6 @@ public class HoodSubsystem implements Subsystem {
         closedLoop.setSetpoint(rotations, ControlType.kPosition);
     }
 
-
     public void setVoltage(double voltage) {
         hood.setVoltage(voltage);
     }

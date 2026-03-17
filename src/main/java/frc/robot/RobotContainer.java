@@ -147,21 +147,20 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
-        // Shooter — runs while right bumper is held, stops everything on release
+        // Shooter
         controller2.rightBumper()
-                .whileTrue(shooter.shoot(transfer));
+                .whileTrue(shooter.shootSequence(transfer));
 
-        // Feeding mode — runs while right trigger is held, stops everything on release
+        // Feeding mode
         controller2.rightTrigger()
-                .whileTrue(shooter.feed(transfer, hood));
+                .whileTrue(shooter.feedingSequence(transfer, hood));
 
         // Hood
+        hood.setDefaultCommand(Commands.runOnce(() -> {
+            if (limelightToggle) {
 
-        // hood.setDefaultCommand(Commands.runOnce(() -> {
-        // if (limelightToggle) {
-
-        // }
-        // }, hood));
+            }
+        }, hood));
 
         climber.setDefaultCommand(Commands.runOnce(() -> {
             SmartDashboard.putNumber("Climber Rotations", climber.getEncoderPosition());
@@ -182,7 +181,8 @@ public class RobotContainer {
             hood.setHoodPreset(HoodPositions.FAR_SHOT);
         }));
 
-        // Manual hood adjust — hold D-pad for voltage, release to lock position with PID
+        // Manual hood adjust — hold D-pad for voltage, release to lock position with
+        // PID
         controller2.povUp().onTrue(Commands.runOnce(() -> {
             hood.setVoltage(0.75);
         }));

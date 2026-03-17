@@ -74,11 +74,11 @@ public class ShooterSubsystem implements Subsystem {
         feeder.set(0);
     }
 
-    public Command shoot(TransferSubsystem transfer) {
+    public Command shootSequence(TransferSubsystem transfer) {
         return Commands.sequence(
                 Commands.runOnce(() -> startMotor(false), this),
                 // wait for motors to get up to speed
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1),
                 Commands.startEnd(
                         // start
                         () -> {
@@ -103,7 +103,7 @@ public class ShooterSubsystem implements Subsystem {
                 });
     }
 
-    public Command feed(TransferSubsystem transfer, HoodSubsystem hood) {
+    public Command feedingSequence(TransferSubsystem transfer, HoodSubsystem hood) {
         return Commands.sequence(
                 Commands.runOnce(() -> {
                     startMotor(true);
