@@ -26,7 +26,6 @@ public class HoodSubsystem implements Subsystem{
         hood.setVoltage(hoodValue);
     }
 
-    /** Set the hood to a preset position (converts degrees to motor rotations). */
     public void setHoodPreset(HoodPositions preset) {
         hood.getEncoder().setPosition(preset.toRotations());
     }
