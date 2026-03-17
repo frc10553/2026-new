@@ -21,8 +21,8 @@ public class Constants {
 
     public static enum HoodPositions {
         STOW(0),
-        NEAR_SHOT(0),
-        FAR_SHOT(0),
+        NEAR_SHOT(30),
+        FAR_SHOT(15),
         FEEDING(0);
 
         private final double angleDegrees;

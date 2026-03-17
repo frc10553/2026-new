@@ -8,7 +8,7 @@ import com.revrobotics.spark.SparkMax;
 
 public class TransferSubsystem implements Subsystem {
     private final SparkMax beltMotor;
-    private final double defaultSpeed = 8.0; //determined expirimentally
+    private final double defaultSpeed = 9.0 ; //determined expirimentally
 
     public TransferSubsystem() {
         beltMotor = new SparkMax(Constants.CanIDs.TRANSFER_BELT, MotorType.kBrushless);

@@ -40,11 +40,9 @@ public class ShooterSubsystem implements Subsystem {
         slot0Configs.kD = SmartDashboard.getNumber("Shooter D", 0); // no output for error derivative
 
         rightMotor.getConfigurator().apply(slot0Configs);
-        // leftMotor.setControl(new Follower(leftMotor.getDeviceID(),
-        // MotorAlignmentValue.Aligned));
+        leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
         rightMotor.setControl(new CoastOut());
-
     }
 
     public void startMotor(boolean feeding) {
@@ -58,7 +56,7 @@ public class ShooterSubsystem implements Subsystem {
         rightMotor.getConfigurator().apply(slot0Configs);
 
         final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); // determined expirimentally
+        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); // determined experimentally
     }
 
     public void startFeeder(boolean feeding) {

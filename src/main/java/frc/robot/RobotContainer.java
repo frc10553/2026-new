@@ -99,6 +99,10 @@ public class RobotContainer {
         SmartDashboard.putNumber("Climb Position", 0.0);
         SmartDashboard.putNumber("Hood Position", 0);
         SmartDashboard.getNumber("Far Hood Position", 0);
+
+        // false = down
+        // true = up
+        SmartDashboard.putBoolean("Manual Climber Direction", false);
     }
 
     private void configureBindings() {
@@ -206,6 +210,8 @@ public class RobotContainer {
             SmartDashboard.putNumber("Intake Rotations", intake.getEncoderPosition());
         }, intake));
 
+        controller1.povRight().onTrue(intake.agitateIntake());
+
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4));
         controller2.start().whileTrue(intake.runIntake(11));
@@ -213,9 +219,21 @@ public class RobotContainer {
         // Deploy arm (in theory)
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
 
-        // Climber
+        /// Climber
         // Press once to go all the way up, press again to dip down
         controller2.povRight().onTrue(climber.climb());
+
+        // Manually move climber
+        controller2.y()
+                .onTrue(Commands.startEnd(
+                        () -> climber.setVoltage(
+                                SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5),
+                        () -> climber.setVoltage(0), climber));
+
+        controller2.y().onTrue(Commands.runOnce(() -> climber
+                .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
+
+        controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

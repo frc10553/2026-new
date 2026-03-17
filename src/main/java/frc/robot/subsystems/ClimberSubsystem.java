@@ -42,4 +42,8 @@ public class ClimberSubsystem implements Subsystem {
             () -> extended
         );
     }
+
+    public void setVoltage(double volts) {
+        motor.setVoltage(volts);
+    }
 }
