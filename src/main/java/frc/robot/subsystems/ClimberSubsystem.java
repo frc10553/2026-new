@@ -11,8 +11,8 @@ public class ClimberSubsystem implements Subsystem {
     private final TalonFX motor;
     private final double defaultSpeed = 0.5;
 
-    public static final double EXTEND_POSITION = 140.0; // don't have 
-    public static final double RETRACT_POSITION = 90.0; // clamped down
+    public static final double EXTEND_POSITION = 147.068; // don't have 
+    public static final double RETRACT_POSITION = 91.192; // clamped down
 
     private boolean extended = false;
 
