@@ -169,6 +169,7 @@ public class RobotContainer {
 
         hood.setDefaultCommand(Commands.runOnce(() -> {
             SmartDashboard.putNumber("Hood Rotations", hood.getEncoderPosition());
+            SmartDashboard.putNumber("Hood Target", hood.getTargetRotations());
         }, hood));
 
         // hood shooting not as far
@@ -181,18 +182,19 @@ public class RobotContainer {
             hood.setHoodPreset(HoodPositions.FAR_SHOT);
         }));
 
+        // Manual hood adjust — hold D-pad for voltage, release to lock position with PID
         controller2.povUp().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(0.75); // Expirimentally determined manual adjust
+            hood.setVoltage(0.75);
         }));
         controller2.povUp().onFalse(Commands.runOnce(() -> {
-            hood.changeHoodPosition(0.0);
+            hood.holdCurrentPosition();
         }));
 
         controller2.povDown().onTrue(Commands.runOnce(() -> {
-            hood.changeHoodPosition(-0.75); // Expirimentally determined manual adjust
+            hood.setVoltage(-0.75);
         }));
         controller2.povDown().onFalse(Commands.runOnce(() -> {
-            hood.changeHoodPosition(0.0);
+            hood.holdCurrentPosition();
         }));
 
         controller2.povLeft().onTrue(Commands.runOnce(() -> {
