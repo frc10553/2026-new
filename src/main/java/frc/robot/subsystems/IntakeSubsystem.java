@@ -30,12 +30,13 @@ public class IntakeSubsystem implements Subsystem {
         armMotor.getConfigurator().apply(pid);
     }
 
-    public void armDeployOut() {
-        // armMotor.setVoltage(SmartDashboard.getNumber("Arm Position", 0));
-        // create a position closed-loop request, voltage output, slot 0 configs
-        final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
+    public void moveWithPID(double rotations) {
+        final PositionVoltage pidRequest = new PositionVoltage(0).withSlot(0);
+        armMotor.setControl(pidRequest.withPosition(rotations));
+    }
 
-        armMotor.setControl(m_request.withPosition(0.6215));
+    public void armDeployOut() {
+        moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
     }
 
     public void armStop() {
@@ -52,40 +53,43 @@ public class IntakeSubsystem implements Subsystem {
                 () -> intakeWheelMotor.setVoltage(0));
     }
 
-    public Command agitateIntake() {
+    public Command agitateIntake(TransferSubsystem transfer) {
         return Commands.sequence(
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.8));
-            }),
-            Commands.waitSeconds(0.2),
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.6215));
-            }),
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.8));
-            }),
-            Commands.waitSeconds(0.2),
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.6215));
-            }),
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.8));
-            }),
-            Commands.waitSeconds(0.2),
-            Commands.runOnce(() -> {
-                final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-                armMotor.setControl(m_request.withPosition(0.6215));
-            })
-        );
+            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> transfer.setVoltage(9)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+            Commands.runOnce(() -> transfer.setVoltage(7)),
+            Commands.waitSeconds(0.5),
+
+            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> transfer.setVoltage(9)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+            Commands.runOnce(() -> transfer.setVoltage(7)),
+            Commands.waitSeconds(0.5),
+
+            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> transfer.setVoltage(9)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+            Commands.runOnce(() -> transfer.setVoltage(7)),
+            Commands.waitSeconds(0.5),
+
+            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> transfer.setVoltage(9)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+            Commands.runOnce(() -> transfer.setVoltage(7)),
+            Commands.waitSeconds(0.5));
     }
 
     public double getEncoderPosition() {
         return armMotor.getRotorPosition().getValueAsDouble();
+    }
+
+    public void setVoltage(double volts) {
+        intakeWheelMotor.setVoltage(volts);
     }
 
     @Override

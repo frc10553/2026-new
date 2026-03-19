@@ -24,39 +24,29 @@ public class ShooterSubsystem implements Subsystem {
 
     // constructor
     public ShooterSubsystem() {
-        SmartDashboard.putNumber("Shooter P", 0.02);
-        SmartDashboard.putNumber("Shooter I", 0);
-        SmartDashboard.putNumber("Shooter D", 0);
 
         leftMotor = new TalonFX(Constants.CanIDs.SHOOTER_LEFT_MOTOR);
         rightMotor = new TalonFX(Constants.CanIDs.SHOOTER_RIGHT_MOTOR);
         feeder = new SparkMax(Constants.CanIDs.SHOOTER_FEEDER, MotorType.kBrushless);
 
         var slot0Configs = new Slot0Configs();
-        slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
-        slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kP = SmartDashboard.getNumber("Shooter P", 0.02); // An error of 1 rps results in 0.11 V output
-        slot0Configs.kI = SmartDashboard.getNumber("Shooter I", 0); // no output for integrated error
-        slot0Configs.kD = SmartDashboard.getNumber("Shooter D", 0); // no output for error derivative
+        slot0Configs.kS = 0;
+        slot0Configs.kV = 0;
+        slot0Configs.kP = 2;
+        slot0Configs.kI = 1.93;
+        slot0Configs.kD = 0.18;
 
         rightMotor.getConfigurator().apply(slot0Configs);
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
         rightMotor.setControl(new CoastOut());
+
+        SmartDashboard.putNumber("Shooter RPS", 60);
     }
 
     public void startMotor(boolean feeding) {
-        var slot0Configs = new Slot0Configs();
-        slot0Configs.kS = 0; // Add 0.1 V output to overcome static friction
-        slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kP = 0.02; // An error of 1 rps results in 0.11 V output
-        slot0Configs.kI = 0.0; // no output for integrated error
-        slot0Configs.kD = 0.0; // no output for error derivative
-
-        rightMotor.getConfigurator().apply(slot0Configs);
-
         final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-        rightMotor.setControl(m_request.withVelocity(feeding ? -600 : -500)); // determined experimentally
+        rightMotor.setControl(m_request.withVelocity(feeding ? -100 : -SmartDashboard.getNumber("Shooter RPS", 60)));
     }
 
     public void startFeeder(boolean feeding) {

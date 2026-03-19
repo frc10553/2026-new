@@ -19,11 +19,13 @@ public class Constants {
 
     public static final double HOOD_GEAR_RATIO = 5.0 * 5.0 * (40 / 15); // 5:1 x 5:1 gearbox + 40/15 tooth gear ratio
 
+    public static final double INTAKE_RESTING_ROTATIONS = 0.6215;
+
     public static enum HoodPositions {
         STOW(0),
         NEAR_SHOT(30),
         FAR_SHOT(15),
-        FEEDING(0);
+        FEEDING(20);
 
         private final double angleDegrees;
 

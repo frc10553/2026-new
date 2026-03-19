@@ -66,7 +66,6 @@ public class RobotContainer {
 
     private final CommandXboxController controller1 = new CommandXboxController(0);
     private final CommandXboxController controller2 = new CommandXboxController(1);
-    // ^^^ for use later
 
     // Subsystems
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -109,22 +108,24 @@ public class RobotContainer {
         // +X is forward
         // +Y is left
         // This is the driving control
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> robotCentricDrive
-                .withVelocityX(controller1.getLeftY() * MaxSpeed).withVelocityY(controller1.getLeftX() * MaxSpeed)
+        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> fieldCentricDrive
+                .withVelocityX(-controller1.getLeftY() * MaxSpeed).withVelocityY(-controller1.getLeftX() * MaxSpeed)
                 .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
 
         controller1.leftTrigger().onTrue(Commands.runOnce(() -> {
             robotCentric = !robotCentric;
             if (robotCentric) {
                 drivetrain.setDefaultCommand(
-                        drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                        drivetrain
+                                .applyRequest(() -> robotCentricDrive.withVelocityX(-controller1.getLeftY() * MaxSpeed)
+                                        .withVelocityY(-controller1.getLeftX() * MaxSpeed)
+                                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             } else {
                 drivetrain.setDefaultCommand(
-                        drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(controller1.getLeftY() * MaxSpeed)
-                                .withVelocityY(controller1.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
+                        drivetrain
+                                .applyRequest(() -> fieldCentricDrive.withVelocityX(-controller1.getLeftY() * MaxSpeed)
+                                        .withVelocityY(-controller1.getLeftX() * MaxSpeed)
+                                        .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
             }
         }));
 
@@ -201,20 +202,24 @@ public class RobotContainer {
             hood.holdCurrentPosition();
         }));
 
-        controller2.povLeft().onTrue(Commands.runOnce(() -> {
-            limelightToggle = !limelightToggle;
-        }));
-
         // Intake
         intake.setDefaultCommand(Commands.runOnce(() -> {
             SmartDashboard.putNumber("Intake Rotations", intake.getEncoderPosition());
         }, intake));
 
-        controller1.povRight().onTrue(intake.agitateIntake());
-
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4));
-        controller2.start().whileTrue(intake.runIntake(11));
+        controller2.leftStick().whileTrue(intake.runIntake(11));
+
+        controller2.povLeft().whileTrue(Commands.startEnd(() -> {
+            intake.setVoltage(-3);
+            transfer.setVoltage(-3);
+        }, () -> {
+            intake.setVoltage(0);
+            transfer.setVoltage(0);
+        }));
+
+        controller1.povRight().whileTrue(intake.agitateIntake(transfer));
 
         // Deploy arm (in theory)
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
