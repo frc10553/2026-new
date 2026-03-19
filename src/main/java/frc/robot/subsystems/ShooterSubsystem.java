@@ -41,12 +41,12 @@ public class ShooterSubsystem implements Subsystem {
 
         rightMotor.setControl(new CoastOut());
 
-        SmartDashboard.putNumber("Shooter RPS", 60);
+        SmartDashboard.putNumber("Shooter RPS", 80);
     }
 
     public void startMotor(boolean feeding) {
         final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-        rightMotor.setControl(m_request.withVelocity(feeding ? -100 : -SmartDashboard.getNumber("Shooter RPS", 60)));
+        rightMotor.setControl(m_request.withVelocity(feeding ? -100 : -SmartDashboard.getNumber("Shooter RPS", 80)));
     }
 
     public void startFeeder(boolean feeding) {

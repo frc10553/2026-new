@@ -55,28 +55,21 @@ public class IntakeSubsystem implements Subsystem {
 
     public Command agitateIntake(TransferSubsystem transfer) {
         return Commands.sequence(
-            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> armMotor.setVoltage(2)),
             Commands.runOnce(() -> transfer.setVoltage(9)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
             Commands.runOnce(() -> transfer.setVoltage(7)),
             Commands.waitSeconds(0.5),
 
-            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> armMotor.setVoltage(2)),
             Commands.runOnce(() -> transfer.setVoltage(9)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
             Commands.runOnce(() -> transfer.setVoltage(7)),
             Commands.waitSeconds(0.5),
 
-            Commands.runOnce(() -> armMotor.setVoltage(1)),
-            Commands.runOnce(() -> transfer.setVoltage(9)),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
-            Commands.runOnce(() -> transfer.setVoltage(7)),
-            Commands.waitSeconds(0.5),
-
-            Commands.runOnce(() -> armMotor.setVoltage(1)),
+            Commands.runOnce(() -> armMotor.setVoltage(2)),
             Commands.runOnce(() -> transfer.setVoltage(9)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),

@@ -153,19 +153,19 @@ public class RobotContainer {
         }));
 
         // Shooter
-        controller2.rightBumper()
+        controller2.rightTrigger()
                 .whileTrue(shooter.shootSequence(transfer));
 
         // Feeding mode
-        controller2.rightTrigger()
+        controller2.rightBumper()
                 .whileTrue(shooter.feedingSequence(transfer, hood));
 
         // Hood
-        hood.setDefaultCommand(Commands.runOnce(() -> {
-            if (limelightToggle) {
+        // hood.setDefaultCommand(Commands.runOnce(() -> {
+        //     if (limelightToggle) {
 
-            }
-        }, hood));
+        //     }
+        // }, hood));
 
         climber.setDefaultCommand(Commands.runOnce(() -> {
             SmartDashboard.putNumber("Climber Rotations", climber.getEncoderPosition());
@@ -220,6 +220,10 @@ public class RobotContainer {
         }));
 
         controller1.povRight().whileTrue(intake.agitateIntake(transfer));
+        controller1.povRight().onFalse(Commands.runOnce(() -> {
+            intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
+        }));
+
 
         // Deploy arm (in theory)
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
