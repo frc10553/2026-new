@@ -112,7 +112,7 @@ public class RobotContainer {
                 .withVelocityX(-controller1.getLeftY() * MaxSpeed).withVelocityY(-controller1.getLeftX() * MaxSpeed)
                 .withRotationalRate(-controller1.getRightX() * MaxAngularRate)));
 
-        controller1.leftTrigger().onTrue(Commands.runOnce(() -> {
+        controller1.povUp().onTrue(Commands.runOnce(() -> {
             robotCentric = !robotCentric;
             if (robotCentric) {
                 drivetrain.setDefaultCommand(
@@ -133,7 +133,7 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        controller1.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        controller1.leftTrigger().whileTrue(drivetrain.applyRequest(() -> brake));
         controller1.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-controller1.getLeftY(), -controller1.getLeftX()))));
 
@@ -144,10 +144,10 @@ public class RobotContainer {
         controller1.start().and(controller1.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Re-center the field-centric heading
-        controller1.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        controller1.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         // Slower drive toggle
-        controller1.povDown().onTrue(Commands.runOnce(() -> {
+        controller1.leftBumper().onTrue(Commands.runOnce(() -> {
              this.slowMode = !this.slowMode;
              this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
@@ -221,8 +221,8 @@ public class RobotContainer {
         }));
 
         
-        controller1.povRight().whileTrue(intake.agitateIntake(transfer));
-        controller1.povRight().onFalse(Commands.runOnce(() -> {
+        controller1.rightBumper().whileTrue(intake.agitateIntake(transfer));
+        controller1.rightBumper().onFalse(Commands.runOnce(() -> {
              intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
         }));
 
