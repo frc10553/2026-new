@@ -148,9 +148,10 @@ public class RobotContainer {
 
         // Slower drive toggle
         controller1.povDown().onTrue(Commands.runOnce(() -> {
-            this.slowMode = !this.slowMode;
-            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
+             this.slowMode = !this.slowMode;
+             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
+
 
         // Shooter
         controller2.rightTrigger()
@@ -219,9 +220,10 @@ public class RobotContainer {
             transfer.setVoltage(0);
         }));
 
+        
         controller1.povRight().whileTrue(intake.agitateIntake(transfer));
         controller1.povRight().onFalse(Commands.runOnce(() -> {
-            intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
+             intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
         }));
 
 
