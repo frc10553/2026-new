@@ -154,11 +154,11 @@ public class RobotContainer {
 
 
         // Shooter
-        controller2.rightTrigger()
+        controller2.rightBumper()
                 .whileTrue(shooter.shootSequence(transfer));
 
         // Feeding mode
-        controller2.rightBumper()
+        controller2.rightTrigger()
                 .whileTrue(shooter.feedingSequence(transfer, hood));
 
         // Hood
