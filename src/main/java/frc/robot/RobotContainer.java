@@ -80,6 +80,16 @@ public class RobotContainer {
     /* Path follower */
     // private final SendableChooser<Command> autoChooser;
 
+    private final Command autoCommand() {
+        return Commands.sequence(
+                shooter.shootSequence(transfer).withTimeout(3),
+                Commands.waitSeconds(1),
+                shooter.shootSequence(transfer).withTimeout(3),
+                Commands.waitSeconds(1),
+                shooter.shootSequence(transfer).withTimeout(3));
+
+    }
+
     public RobotContainer() {
         this.shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
@@ -89,6 +99,12 @@ public class RobotContainer {
 
         // autoChooser = AutoBuilder.buildAutoChooser("Tests");
         // SmartDashboard.putData("Auto Mode", autoChooser);
+
+        SendableChooser<Command> autoChooser = new SendableChooser<>();
+        autoChooser.setDefaultOption("Nothing", Commands.none());
+        autoChooser.addOption("Shoot Auto", autoCommand());
+
+        SmartDashboard.putData(autoChooser);
 
         configureBindings();
 
@@ -148,10 +164,9 @@ public class RobotContainer {
 
         // Slower drive toggle
         controller1.leftBumper().onTrue(Commands.runOnce(() -> {
-             this.slowMode = !this.slowMode;
-             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
+            this.slowMode = !this.slowMode;
+            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
-
 
         // Shooter
         controller2.rightBumper()
@@ -163,9 +178,9 @@ public class RobotContainer {
 
         // Hood
         // hood.setDefaultCommand(Commands.runOnce(() -> {
-        //     if (limelightToggle) {
+        // if (limelightToggle) {
 
-        //     }
+        // }
         // }, hood));
 
         climber.setDefaultCommand(Commands.runOnce(() -> {
@@ -220,12 +235,10 @@ public class RobotContainer {
             transfer.setVoltage(0);
         }));
 
-        
         controller1.rightBumper().whileTrue(intake.agitateIntake(transfer));
         controller1.rightBumper().onFalse(Commands.runOnce(() -> {
-             intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
+            intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
         }));
-
 
         // Deploy arm (in theory)
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
@@ -236,13 +249,15 @@ public class RobotContainer {
 
         // Manually move climber
         // controller2.y()
-        //         .onTrue(Commands.startEnd(
-        //                 () -> climber.setVoltage(
-        //                         SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5),
-        //                 () -> climber.setVoltage(0), climber));
+        // .onTrue(Commands.startEnd(
+        // () -> climber.setVoltage(
+        // SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5
+        // : 5),
+        // () -> climber.setVoltage(0), climber));
 
         // controller2.y().onTrue(Commands.runOnce(() -> climber
-        //         .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
+        // .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /*
+        // down */) ? -5 : 5)));
 
         // controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
@@ -251,11 +266,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return Commands.sequence(
-            shooter.shootSequence(transfer).withTimeout(3),
-            Commands.waitSeconds(1),
-            shooter.shootSequence(transfer).withTimeout(3),
-            Commands.waitSeconds(1),
-            shooter.shootSequence(transfer).withTimeout(3)
-        );
+                shooter.shootSequence(transfer).withTimeout(3),
+                Commands.waitSeconds(1),
+                shooter.shootSequence(transfer).withTimeout(3),
+                Commands.waitSeconds(1),
+                shooter.shootSequence(transfer).withTimeout(3));
     }
 }
