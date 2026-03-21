@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -36,7 +37,13 @@ public class ShooterSubsystem implements Subsystem {
         slot0Configs.kI = 1.93;
         slot0Configs.kD = 0.18;
 
+        var currentLimits = new CurrentLimitsConfigs();
+        currentLimits.SupplyCurrentLimit = 60;
+        currentLimits.StatorCurrentLimit = 100;
+
         rightMotor.getConfigurator().apply(slot0Configs);
+        rightMotor.getConfigurator().apply(currentLimits);
+        
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
         rightMotor.setControl(new CoastOut());
@@ -66,7 +73,7 @@ public class ShooterSubsystem implements Subsystem {
         return Commands.sequence(
                 Commands.runOnce(() -> startMotor(false), this),
                 // wait for motors to get up to speed
-                Commands.waitSeconds(1),
+                Commands.waitSeconds(1.5),
                 Commands.startEnd(
                         // start
                         () -> {

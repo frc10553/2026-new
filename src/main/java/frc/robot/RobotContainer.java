@@ -38,7 +38,7 @@ public class RobotContainer {
     // Maximum speed
     // (is divided by 4 for slow mode)
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+    private double MaxAngularRate = RotationsPerSecond.of(0.75 * 0.75).in(RadiansPerSecond);
     private boolean slowMode = false;
     private boolean robotCentric = false;
 
@@ -209,7 +209,7 @@ public class RobotContainer {
         }, intake));
 
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
-        controller2.leftTrigger().whileTrue(intake.runIntake(4));
+        controller2.leftTrigger().whileTrue(intake.runIntake(4.5));
         controller2.leftStick().whileTrue(intake.runIntake(11));
 
         controller2.povLeft().whileTrue(Commands.startEnd(() -> {
@@ -232,25 +232,30 @@ public class RobotContainer {
 
         /// Climber
         // Press once to go all the way up, press again to dip down
-        controller2.povRight().onTrue(climber.climb());
+        // controller2.povRight().onTrue(climber.climb());
 
         // Manually move climber
-        controller2.y()
-                .onTrue(Commands.startEnd(
-                        () -> climber.setVoltage(
-                                SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5),
-                        () -> climber.setVoltage(0), climber));
+        // controller2.y()
+        //         .onTrue(Commands.startEnd(
+        //                 () -> climber.setVoltage(
+        //                         SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5),
+        //                 () -> climber.setVoltage(0), climber));
 
-        controller2.y().onTrue(Commands.runOnce(() -> climber
-                .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
+        // controller2.y().onTrue(Commands.runOnce(() -> climber
+        //         .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
 
-        controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
+        // controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    // public Command getAutonomousCommand() {
-    // /* Run the path selected from the auto chooser */
-    //// return autoChooser.getSelected();
-    // }
+    public Command getAutonomousCommand() {
+        return Commands.sequence(
+            shooter.shootSequence(transfer).withTimeout(3),
+            Commands.waitSeconds(1),
+            shooter.shootSequence(transfer).withTimeout(3),
+            Commands.waitSeconds(1),
+            shooter.shootSequence(transfer).withTimeout(3)
+        );
+    }
 }
