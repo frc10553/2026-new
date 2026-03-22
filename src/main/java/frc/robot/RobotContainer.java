@@ -248,18 +248,10 @@ public class RobotContainer {
         // controller2.povRight().onTrue(climber.climb());
 
         // Manually move climber
-        // controller2.y()
-        // .onTrue(Commands.startEnd(
-        // () -> climber.setVoltage(
-        // SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5
-        // : 5),
-        // () -> climber.setVoltage(0), climber));
 
-        // controller2.y().onTrue(Commands.runOnce(() -> climber
-        // .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /*
-        // down */) ? -5 : 5)));
+        controller2.y().onTrue(Commands.runOnce(() -> climber.setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /*down */) ? -5 : 5)));
 
-        // controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
+        controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
