@@ -118,6 +118,8 @@ public class RobotContainer {
         // false = down
         // true = up
         SmartDashboard.putBoolean("Manual Climber Direction", false);
+
+        SmartDashboard.putBoolean("Motor Status", true);
     }
 
     private void configureBindings() {
@@ -168,11 +170,11 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
-         // Shooter
+        // Shooter
         shooter.setDefaultCommand(Commands.run(() -> {
             SmartDashboard.putNumber("Active Shooter RPS", shooter.getActiveRPS());
         }, shooter));
-        
+
         controller2.rightBumper()
                 .whileTrue(shooter.shootSequence(transfer));
 
@@ -253,7 +255,8 @@ public class RobotContainer {
 
         // Manually move climber
 
-        controller2.y().onTrue(Commands.runOnce(() -> climber.setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /*down */) ? -5 : 5)));
+        controller2.y().onTrue(Commands.runOnce(() -> climber
+                .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
 
         controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
