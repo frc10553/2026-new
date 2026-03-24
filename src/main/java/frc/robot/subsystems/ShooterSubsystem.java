@@ -60,6 +60,10 @@ public class ShooterSubsystem implements Subsystem {
         feeder.setVoltage(feeding ? -7 : -8);
     }
 
+    public double getActiveRPS() {
+        return rightMotor.getVelocity().getValueAsDouble();
+    }
+
     public void stopFeeder() {
         feeder.setVoltage(0);
     }

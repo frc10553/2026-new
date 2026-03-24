@@ -168,7 +168,11 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
-        // Shooter
+         // Shooter
+        shooter.setDefaultCommand(Commands.run(() -> {
+            SmartDashboard.putNumber("Active Shooter RPS", shooter.getActiveRPS());
+        }, shooter));
+        
         controller2.rightBumper()
                 .whileTrue(shooter.shootSequence(transfer));
 
