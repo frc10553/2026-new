@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
-public class TransferSubsystem implements Subsystem {
+public class TransferSubsystem extends SubsystemBase {
     private final SparkMax beltMotor;
     private final double defaultSpeed = 9.0; // determined experimentally
 

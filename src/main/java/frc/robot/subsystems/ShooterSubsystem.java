@@ -13,11 +13,11 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodPositions;
 import frc.robot.Constants;
 
-public class ShooterSubsystem implements Subsystem {
+public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     private final SparkMax feeder;
@@ -128,5 +128,10 @@ public class ShooterSubsystem implements Subsystem {
                     stopFeeder();
                     transfer.stopMotor();
                 });
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Active Shooter RPS", getActiveRPS());
     }
 }

@@ -170,33 +170,12 @@ public class RobotContainer {
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
         }));
 
-        // Shooter
-        shooter.setDefaultCommand(Commands.run(() -> {
-            SmartDashboard.putNumber("Active Shooter RPS", shooter.getActiveRPS());
-        }, shooter));
-
         controller2.rightBumper()
                 .whileTrue(shooter.shootSequence(transfer));
 
         // Feeding mode
         controller2.rightTrigger()
                 .whileTrue(shooter.feedingSequence(transfer, hood));
-
-        // Hood
-        // hood.setDefaultCommand(Commands.runOnce(() -> {
-        // if (limelightToggle) {
-
-        // }
-        // }, hood));
-
-        climber.setDefaultCommand(Commands.runOnce(() -> {
-            SmartDashboard.putNumber("Climber Rotations", climber.getEncoderPosition());
-        }, climber));
-
-        hood.setDefaultCommand(Commands.runOnce(() -> {
-            SmartDashboard.putNumber("Hood Rotations", hood.getEncoderPosition());
-            SmartDashboard.putNumber("Hood Target", hood.getTargetRotations());
-        }, hood));
 
         // hood shooting not as far
         controller2.a().onTrue(Commands.runOnce(() -> {
@@ -223,11 +202,6 @@ public class RobotContainer {
         controller2.povDown().onFalse(Commands.runOnce(() -> {
             hood.holdCurrentPosition();
         }));
-
-        // Intake
-        intake.setDefaultCommand(Commands.runOnce(() -> {
-            SmartDashboard.putNumber("Intake Rotations", intake.getEncoderPosition());
-        }, intake));
 
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4.5));

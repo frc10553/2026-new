@@ -9,11 +9,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.FeedbackSensor;
 
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.HoodPositions;
 
-public class HoodSubsystem implements Subsystem {
+public class HoodSubsystem extends SubsystemBase {
     private final SparkMax hood;
     private final SparkClosedLoopController closedLoop;
 
@@ -63,5 +64,11 @@ public class HoodSubsystem implements Subsystem {
 
     public double getEncoderPosition() {
         return hood.getEncoder().getPosition();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Hood Rotations", getEncoderPosition());
+        SmartDashboard.putNumber("Hood Target", getTargetRotations());
     }
 }

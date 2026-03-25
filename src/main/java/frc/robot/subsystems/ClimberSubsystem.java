@@ -4,10 +4,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ClimberSubsystem implements Subsystem {
+public class ClimberSubsystem extends SubsystemBase {
     private final TalonFX motor;
     private final double defaultSpeed = 0.5;
 
@@ -45,5 +45,10 @@ public class ClimberSubsystem implements Subsystem {
 
     public void setVoltage(double volts) {
         motor.setVoltage(volts);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Climber Rotations", getEncoderPosition());
     }
 }
