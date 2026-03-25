@@ -43,12 +43,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
         rightMotor.getConfigurator().apply(slot0Configs);
         rightMotor.getConfigurator().apply(currentLimits);
-        
+
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
         rightMotor.setControl(new CoastOut());
 
-        SmartDashboard.putNumber("Shooter RPS", 80);
+        SmartDashboard.putNumber("activeShooterVelocity", rightMotor.getVelocity().getValueAsDouble());
     }
 
     public void startMotor(boolean feeding) {
@@ -58,10 +58,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void startFeeder(boolean feeding) {
         feeder.setVoltage(feeding ? -7 : -8);
-    }
-
-    public double getActiveRPS() {
-        return rightMotor.getVelocity().getValueAsDouble();
     }
 
     public void stopFeeder() {
@@ -132,6 +128,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Active Shooter RPS", getActiveRPS());
+        SmartDashboard.putNumber("activeShooterVelocity", rightMotor.getVelocity().getValueAsDouble());
     }
 }
