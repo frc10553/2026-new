@@ -82,11 +82,11 @@ public class RobotContainer {
 
     private final Command autoCommand() {
         return Commands.sequence(
-                shooter.shootSequence(transfer).withTimeout(3),
+                shooter.shootSequence(transfer, intake).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3),
+                shooter.shootSequence(transfer, intake).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3));
+                shooter.shootSequence(transfer, intake).withTimeout(3));
 
     }
 
@@ -171,7 +171,7 @@ public class RobotContainer {
         }));
 
         controller2.rightBumper()
-                .whileTrue(shooter.shootSequence(transfer));
+                .whileTrue(shooter.shootSequence(transfer, intake));
 
         // Feeding mode
         controller2.rightTrigger()
@@ -239,10 +239,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return Commands.sequence(
-                shooter.shootSequence(transfer).withTimeout(3),
+                shooter.shootSequence(transfer, intake).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3),
+                shooter.shootSequence(transfer, intake).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3));
+                shooter.shootSequence(transfer, intake).withTimeout(3));
     }
 }
