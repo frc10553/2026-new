@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,5 +71,14 @@ public class HoodSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Hood Rotations", getEncoderPosition());
         SmartDashboard.putNumber("Hood Target", getTargetRotations());
+    }
+
+    public boolean isConnected() {
+        SparkBase.Faults hoodFaults = hood.getFaults();
+        if (!hoodFaults.can && !hoodFaults.motorType) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -306,6 +306,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
+    public boolean isConnected() {
+        for (var module : getModules()) {
+            if (!module.getDriveMotor().isConnected() || !module.getDriveMotor().isAlive()) {
+                return false;
+            }
+            if (!module.getSteerMotor().isConnected() || !module.getSteerMotor().isAlive()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the
      * odometry pose estimate

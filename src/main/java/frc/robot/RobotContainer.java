@@ -91,7 +91,7 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
-        this.shooter = new ShooterSubsystem();
+        shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
         transfer = new TransferSubsystem();
         climber = new ClimberSubsystem();
@@ -120,6 +120,12 @@ public class RobotContainer {
         SmartDashboard.putBoolean("Manual Climber Direction", false);
 
         SmartDashboard.putBoolean("Motor Status", true);
+
+        CommandScheduler.getInstance().schedule(Commands.run(() -> {
+            SmartDashboard.putBoolean("allMotorsConnected",
+                    intake.isConnected() && hood.isConnected() && shooter.isConnected()
+                            && transfer.isConnected() && drivetrain.isConnected());
+        }));
     }
 
     private void configureBindings() {

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -129,5 +130,22 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("activeShooterVelocity", rightMotor.getVelocity().getValueAsDouble());
+    }
+
+    public boolean isConnected() {
+        SparkBase.Faults feederFaults = feeder.getFaults();
+        if (!feederFaults.can && !feederFaults.motorType) {
+            return false;
+        }
+
+        if (!rightMotor.isConnected() || !leftMotor.isConnected()) {
+            return false;
+        }
+
+        if (!rightMotor.isAlive() || !leftMotor.isAlive()) {
+            return false;
+        }
+
+        return true;
     }
 }

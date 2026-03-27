@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -23,5 +24,10 @@ public class TransferSubsystem extends SubsystemBase {
 
     public void setVoltage(double volts) {
         beltMotor.setVoltage(volts);
+    }
+
+    public boolean isConnected() {
+        SparkBase.Faults faults = beltMotor.getFaults();
+        return !faults.can && !faults.motorType;
     }
 }
