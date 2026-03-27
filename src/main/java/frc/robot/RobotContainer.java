@@ -38,7 +38,7 @@ public class RobotContainer {
     // Maximum speed
     // (is divided by 4 for slow mode)
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private double MaxAngularRate = RotationsPerSecond.of(0.75 * 0.75).in(RadiansPerSecond);
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     private boolean slowMode = false;
     private boolean robotCentric = false;
 
@@ -72,7 +72,6 @@ public class RobotContainer {
     public final ShooterSubsystem shooter;
     public final IntakeSubsystem intake;
     public final TransferSubsystem transfer;
-    public final ClimberSubsystem climber;
     public final HoodSubsystem hood;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -94,7 +93,6 @@ public class RobotContainer {
         shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
         transfer = new TransferSubsystem();
-        climber = new ClimberSubsystem();
         hood = new HoodSubsystem();
 
         // autoChooser = AutoBuilder.buildAutoChooser("Tests");
@@ -211,7 +209,7 @@ public class RobotContainer {
 
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4.5));
-        controller2.leftStick().whileTrue(intake.runIntake(11));
+        controller2.y().whileTrue(intake.runIntake(11));
 
         controller2.povLeft().whileTrue(Commands.startEnd(() -> {
             intake.setVoltage(-3);
@@ -228,17 +226,6 @@ public class RobotContainer {
 
         // Deploy arm (in theory)
         controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
-
-        /// Climber
-        // Press once to go all the way up, press again to dip down
-        // controller2.povRight().onTrue(climber.climb());
-
-        // Manually move climber
-
-        controller2.y().onTrue(Commands.runOnce(() -> climber
-                .setVoltage(SmartDashboard.getBoolean("Manual Climber Direction", false /* down */) ? -5 : 5)));
-
-        controller2.y().onFalse(Commands.runOnce(() -> climber.setVoltage(0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
