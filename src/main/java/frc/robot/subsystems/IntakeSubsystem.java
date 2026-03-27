@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.units.measure.Voltage;
@@ -55,26 +56,26 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command agitateIntake(TransferSubsystem transfer) {
         return Commands.sequence(
-            Commands.runOnce(() -> armMotor.setVoltage(1.25)),
-            Commands.runOnce(() -> transfer.setVoltage(9)),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
-            Commands.runOnce(() -> transfer.setVoltage(7)),
-            Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> armMotor.setVoltage(1.25)),
+                Commands.runOnce(() -> transfer.setVoltage(9)),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+                Commands.runOnce(() -> transfer.setVoltage(7)),
+                Commands.waitSeconds(0.5),
 
-            Commands.runOnce(() -> armMotor.setVoltage(1.25)),
-            Commands.runOnce(() -> transfer.setVoltage(9)),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
-            Commands.runOnce(() -> transfer.setVoltage(7)),
-            Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> armMotor.setVoltage(1.25)),
+                Commands.runOnce(() -> transfer.setVoltage(9)),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+                Commands.runOnce(() -> transfer.setVoltage(7)),
+                Commands.waitSeconds(0.5),
 
-            Commands.runOnce(() -> armMotor.setVoltage(1.25)),
-            Commands.runOnce(() -> transfer.setVoltage(9)),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
-            Commands.runOnce(() -> transfer.setVoltage(7)),
-            Commands.waitSeconds(0.5));
+                Commands.runOnce(() -> armMotor.setVoltage(1.25)),
+                Commands.runOnce(() -> transfer.setVoltage(9)),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> moveWithPID(Constants.INTAKE_RESTING_ROTATIONS)),
+                Commands.runOnce(() -> transfer.setVoltage(7)),
+                Commands.waitSeconds(0.5));
     }
 
     public double getEncoderPosition() {
@@ -88,5 +89,18 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake Position", armMotor.getRotorPosition().getValue().magnitude());
+    }
+
+    public boolean isConnected() {
+        SparkBase.Faults intakeFaults = intakeWheelMotor.getFaults();
+        if (!intakeFaults.can && !intakeFaults.motorType) {
+            return false;
+        }
+
+        if (!armMotor.isConnected() || !armMotor.isAlive()) {
+            return false;
+        }
+
+        return true;
     }
 }
