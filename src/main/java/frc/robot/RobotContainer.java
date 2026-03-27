@@ -171,7 +171,7 @@ public class RobotContainer {
         // Slower drive toggle
         controller1.leftBumper().onTrue(Commands.runOnce(() -> {
             this.slowMode = !this.slowMode;
-            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4 : 1);
+            this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4.25 : 1);
         }));
 
         controller2.rightBumper()
