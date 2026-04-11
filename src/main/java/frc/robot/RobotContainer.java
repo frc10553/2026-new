@@ -181,6 +181,20 @@ public class RobotContainer {
         controller2.rightTrigger()
                 .whileTrue(shooter.feedingSequence(transfer/* ,intake*/));
 
+
+        controller2.a().onTrue(Commands.runOnce(() -> {
+            shooter.startFeeder(false);
+        }));
+        controller2.a().onFalse(Commands.runOnce(() -> {
+            shooter.stopMotor();
+        }));
+
+        controller2.b().onTrue(Commands.runOnce(() -> {
+            shooter.startMotor(false);
+        }));
+        controller2.b().onFalse(Commands.runOnce(() -> {
+            shooter.stopMotor();
+        }));
         // hood shooting not as far
         // controller2.a().onTrue(Commands.runOnce(() -> {
         //     hood.setHoodPreset(HoodPositions.NEAR_SHOT);
