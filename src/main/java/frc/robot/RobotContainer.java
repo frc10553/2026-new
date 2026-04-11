@@ -30,8 +30,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
-import frc.robot.subsystems.HoodSubsystem;
-import frc.robot.Constants.HoodPositions;
+// import frc.robot.subsystems.HoodSubsystem;
+// import frc.robot.Constants.HoodPositions;
 
 public class RobotContainer {
 
@@ -72,7 +72,7 @@ public class RobotContainer {
     public final ShooterSubsystem shooter;
     public final IntakeSubsystem intake;
     public final TransferSubsystem transfer;
-    public final HoodSubsystem hood;
+    // public final HoodSubsystem hood;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -81,11 +81,11 @@ public class RobotContainer {
 
     private final Command autoCommand() {
         return Commands.sequence(
-                shooter.shootSequence(transfer, intake).withTimeout(3),
+                shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer, intake).withTimeout(3),
+                shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer, intake).withTimeout(3));
+                shooter.shootSequence(transfer).withTimeout(3));
 
     }
 
@@ -93,7 +93,7 @@ public class RobotContainer {
         shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
         transfer = new TransferSubsystem();
-        hood = new HoodSubsystem();
+        // hood = new HoodSubsystem();
 
         // autoChooser = AutoBuilder.buildAutoChooser("Tests");
         // SmartDashboard.putData("Auto Mode", autoChooser);
@@ -108,10 +108,10 @@ public class RobotContainer {
 
         // Warmup PathPlanner to avoid Java pauses
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
-        SmartDashboard.putNumber("Hood Angle Adjustment", 0.25);
+        // SmartDashboard.putNumber("Hood Angle Adjustment", 0.25);
         SmartDashboard.putNumber("Climb Position", 0.0);
-        SmartDashboard.putNumber("Hood Position", 0);
-        SmartDashboard.getNumber("Far Hood Position", 0);
+        // SmartDashboard.putNumber("Hood Position", 0);
+        // SmartDashboard.getNumber("Far Hood Position", 0);
 
         // false = down
         // true = up
@@ -121,7 +121,7 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(Commands.run(() -> {
             SmartDashboard.putBoolean("allMotorsConnected",
-                    intake.isConnected() && hood.isConnected() && shooter.isConnected()
+                    intake.isConnected() /*&& hood.isConnected()*/ && shooter.isConnected()
                             && transfer.isConnected() && drivetrain.isConnected());
         }));
     }
@@ -175,37 +175,37 @@ public class RobotContainer {
         }));
 
         controller2.rightBumper()
-                .whileTrue(shooter.shootSequence(transfer, intake));
+                .whileTrue(shooter.shootSequence(transfer/* , intake*/));
 
         // Feeding mode
         controller2.rightTrigger()
-                .whileTrue(shooter.feedingSequence(transfer, hood));
+                .whileTrue(shooter.feedingSequence(transfer/* ,intake*/));
 
         // hood shooting not as far
-        controller2.a().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPreset(HoodPositions.NEAR_SHOT);
-        }));
+        // controller2.a().onTrue(Commands.runOnce(() -> {
+        //     hood.setHoodPreset(HoodPositions.NEAR_SHOT);
+        // }));
 
-        // hood shooting far
-        controller2.b().onTrue(Commands.runOnce(() -> {
-            hood.setHoodPreset(HoodPositions.FAR_SHOT);
-        }));
+        // // hood shooting far
+        // controller2.b().onTrue(Commands.runOnce(() -> {
+        //     hood.setHoodPreset(HoodPositions.FAR_SHOT);
+        // }));
 
         // Manual hood adjust — hold D-pad for voltage, release to lock position with
         // PID
-        controller2.povUp().onTrue(Commands.runOnce(() -> {
-            hood.setVoltage(0.75);
-        }));
-        controller2.povUp().onFalse(Commands.runOnce(() -> {
-            hood.holdCurrentPosition();
-        }));
+        // controller2.povUp().onTrue(Commands.runOnce(() -> {
+        //     hood.setVoltage(0.75);
+        // }));
+        // controller2.povUp().onFalse(Commands.runOnce(() -> {
+        //     hood.holdCurrentPosition();
+        // }));
 
-        controller2.povDown().onTrue(Commands.runOnce(() -> {
-            hood.setVoltage(-0.75);
-        }));
-        controller2.povDown().onFalse(Commands.runOnce(() -> {
-            hood.holdCurrentPosition();
-        }));
+        // controller2.povDown().onTrue(Commands.runOnce(() -> {
+        //     hood.setVoltage(-0.75);
+        // }));
+        // controller2.povDown().onFalse(Commands.runOnce(() -> {
+        //     hood.holdCurrentPosition();
+        // }));
 
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4.5));
@@ -219,23 +219,23 @@ public class RobotContainer {
             transfer.setVoltage(0);
         }));
 
-        controller1.rightBumper().whileTrue(intake.agitateIntake(transfer));
-        controller1.rightBumper().onFalse(Commands.runOnce(() -> {
-            intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
-        }));
+        // controller1.rightBumper().whileTrue(intake.agitateIntake(transfer));
+        // controller1.rightBumper().onFalse(Commands.runOnce(() -> {
+        //     intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
+        // }));
 
         // Deploy arm (in theory)
-        controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
+        // controller2.x().onTrue(Commands.runOnce(intake::armDeployOut, intake));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
         return Commands.sequence(
-                shooter.shootSequence(transfer, intake).withTimeout(3),
+                shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer, intake).withTimeout(3),
+                shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
-                shooter.shootSequence(transfer, intake).withTimeout(3));
+                shooter.shootSequence(transfer).withTimeout(3));
     }
 }
