@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HoodPositions;
+// import frc.robot.Constants.HoodPositions;
 import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -70,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
         feeder.set(0);
     }
 
-    public Command shootSequence(TransferSubsystem transfer, IntakeSubsystem intake) {
+    public Command shootSequence(TransferSubsystem transfer/*, IntakeSubsystem intake*/) {
         return Commands.parallel(
             Commands.sequence(
                 Commands.runOnce(() -> startMotor(false), this),
@@ -80,14 +80,14 @@ public class ShooterSubsystem extends SubsystemBase {
                     startFeeder(false);
                 })),
             
-            Commands.sequence(Commands.waitSeconds(1.5), Commands.repeatingSequence(
-                Commands.runOnce(() -> intake.setVoltage(2.5)), 
-                Commands.waitSeconds(1), 
-                Commands.runOnce(() -> intake.setVoltage(4.5)),
-                Commands.waitSeconds(1)
-            )),
+            // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+            //     Commands.runOnce(() -> intake.setVoltage(2.5)), 
+            //     Commands.waitSeconds(1), 
+            //     Commands.runOnce(() -> intake.setVoltage(4.5)),
+            //     Commands.waitSeconds(1)
+            // )),
 
-            Commands.sequence(Commands.waitSeconds(1.5), Commands.repeatingSequence(
+            Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
                 Commands.runOnce(() -> transfer.setVoltage(9)), 
                 Commands.waitSeconds(1), 
                 Commands.runOnce(() -> transfer.setVoltage(5)),
@@ -100,35 +100,41 @@ public class ShooterSubsystem extends SubsystemBase {
                     stopMotor();
                     stopFeeder();
                     transfer.stopMotor();
-                    intake.setVoltage(0);
+                    //intake.setVoltage(0);
                 });
     }
 
-    public Command feedingSequence(TransferSubsystem transfer, HoodSubsystem hood) {
-        return Commands.sequence(
+    public Command feedingSequence(TransferSubsystem transfer/*, IntakeSubsystem intake*/) {
+        return Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(() -> startMotor(true), this),
+                // wait for motors to get up to speed
+                Commands.waitSeconds(1.5),
                 Commands.runOnce(() -> {
-                    startMotor(true);
-                    hood.setHoodPreset(HoodPositions.FEEDING);
-                }, this),
-                Commands.waitSeconds(0.5),
-                Commands.startEnd(
-                        // start
-                        () -> {
-                            startFeeder(true);
-                            transfer.startMotor();
-                        },
+                    startFeeder(true);
+                })),
+            
+            // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+            //     Commands.runOnce(() -> intake.setVoltage(2.5)), 
+            //     Commands.waitSeconds(1), 
+            //     Commands.runOnce(() -> intake.setVoltage(4.5)),
+            //     Commands.waitSeconds(1)
+            // )),
 
-                        // end
-                        () -> {
-                            stopMotor();
-                            stopFeeder();
-                            transfer.stopMotor();
-                        },
-                        this, transfer))
+            Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+                Commands.runOnce(() -> transfer.setVoltage(9)), 
+                Commands.waitSeconds(1), 
+                Commands.runOnce(() -> transfer.setVoltage(5)),
+                Commands.waitSeconds(1)
+            )))
+
+                // still stops the motors even if this exits before the waitSeconds finishes
+                // (from what I understand)
                 .finallyDo(() -> {
                     stopMotor();
                     stopFeeder();
                     transfer.stopMotor();
+                    //intake.setVoltage(0);
                 });
     }
 
