@@ -61,11 +61,17 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
+    private final SwerveRequest.RobotCentric autoRobotCentricDrive = new SwerveRequest.RobotCentric()
+            .withDeadband(0).withRotationalDeadband(0)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final CommandXboxController controller1 = new CommandXboxController(0);
     private final CommandXboxController controller2 = new CommandXboxController(1);
+
+    SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     // Subsystems
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -81,6 +87,11 @@ public class RobotContainer {
 
     private final Command autoCommand() {
         return Commands.sequence(
+                drivetrain.applyRequest(() -> autoRobotCentricDrive.withVelocityX(-0.25)
+                        .withVelocityY(0).withRotationalRate(0)).withTimeout(2),
+                drivetrain.runOnce(() -> drivetrain.setControl(
+                        autoRobotCentricDrive.withVelocityX(0)
+                                .withVelocityY(0).withRotationalRate(0))),
                 shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
                 shooter.shootSequence(transfer).withTimeout(3),
@@ -98,7 +109,7 @@ public class RobotContainer {
         // autoChooser = AutoBuilder.buildAutoChooser("Tests");
         // SmartDashboard.putData("Auto Mode", autoChooser);
 
-        SendableChooser<Command> autoChooser = new SendableChooser<>();
+        // SendableChooser<Command> autoChooser = new SendableChooser<>();
         autoChooser.setDefaultOption("Nothing", Commands.none());
         autoChooser.addOption("Shoot Auto", autoCommand());
 
@@ -121,7 +132,7 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(Commands.run(() -> {
             SmartDashboard.putBoolean("allMotorsConnected",
-                    intake.isConnected() /*&& hood.isConnected()*/ && shooter.isConnected()
+                    intake.isConnected() /* && hood.isConnected() */ && shooter.isConnected()
                             && transfer.isConnected() && drivetrain.isConnected());
         }));
     }
@@ -175,12 +186,11 @@ public class RobotContainer {
         }));
 
         controller2.rightBumper()
-                .whileTrue(shooter.shootSequence(transfer/* , intake*/));
+                .whileTrue(shooter.shootSequence(transfer/* , intake */));
 
         // Feeding mode
         controller2.rightTrigger()
-                .whileTrue(shooter.feedingSequence(transfer/* ,intake*/));
-
+                .whileTrue(shooter.feedingSequence(transfer/* ,intake */));
 
         controller2.a().onTrue(Commands.runOnce(() -> {
             shooter.startFeeder(false);
@@ -197,28 +207,28 @@ public class RobotContainer {
         }));
         // hood shooting not as far
         // controller2.a().onTrue(Commands.runOnce(() -> {
-        //     hood.setHoodPreset(HoodPositions.NEAR_SHOT);
+        // hood.setHoodPreset(HoodPositions.NEAR_SHOT);
         // }));
 
         // // hood shooting far
         // controller2.b().onTrue(Commands.runOnce(() -> {
-        //     hood.setHoodPreset(HoodPositions.FAR_SHOT);
+        // hood.setHoodPreset(HoodPositions.FAR_SHOT);
         // }));
 
         // Manual hood adjust — hold D-pad for voltage, release to lock position with
         // PID
         // controller2.povUp().onTrue(Commands.runOnce(() -> {
-        //     hood.setVoltage(0.75);
+        // hood.setVoltage(0.75);
         // }));
         // controller2.povUp().onFalse(Commands.runOnce(() -> {
-        //     hood.holdCurrentPosition();
+        // hood.holdCurrentPosition();
         // }));
 
         // controller2.povDown().onTrue(Commands.runOnce(() -> {
-        //     hood.setVoltage(-0.75);
+        // hood.setVoltage(-0.75);
         // }));
         // controller2.povDown().onFalse(Commands.runOnce(() -> {
-        //     hood.holdCurrentPosition();
+        // hood.holdCurrentPosition();
         // }));
 
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
@@ -235,7 +245,7 @@ public class RobotContainer {
 
         // controller1.rightBumper().whileTrue(intake.agitateIntake(transfer));
         // controller1.rightBumper().onFalse(Commands.runOnce(() -> {
-        //     intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
+        // intake.moveWithPID(Constants.INTAKE_RESTING_ROTATIONS);
         // }));
 
         // Deploy arm (in theory)
@@ -245,11 +255,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-                shooter.shootSequence(transfer).withTimeout(3),
-                Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3),
-                Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3));
+        return autoChooser.getSelected();
     }
 }
