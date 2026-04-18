@@ -60,10 +60,11 @@ public class ShooterSubsystem extends SubsystemBase {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kS = 0;
         slot0Configs.kV = 0.2;
+        //3
         slot0Configs.kP = 3;
-        //1.93
+        //0
         slot0Configs.kI = 0;
-        //0.18
+        //0.35
         slot0Configs.kD = 0.35;
 
         var currentLimits = new CurrentLimitsConfigs();
@@ -105,10 +106,10 @@ public class ShooterSubsystem extends SubsystemBase {
     //     targetRPM = 0;
     // }
 
-    // public double getCurrentRPM(){
-    //     // TODO get actual encoder value
-    //     return 0;
-    // }
+    public double getCurrentRPM(){
+        // TODO get actual encoder value
+        return 0;
+    }
 
     // public boolean atSpeed(){
     //     return Math.abs(getCurrentRPM()-targetRPM)<100;
@@ -198,8 +199,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("activeShooterVelocityRight", rightMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("activeShooterVelocityLeft", leftMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("activeShooterVelocityRight", Math.abs(rightMotor.getVelocity().getValueAsDouble()));
+        SmartDashboard.putNumber("activeShooterVelocityLeft", Math.abs(leftMotor.getVelocity().getValueAsDouble()));
         // double currentRPM = getCurrentRPM();
         // double output = leftController.calculate(currentRPM, targetRPM);
         // output = Math.max(-1, Math.min(1, output));
