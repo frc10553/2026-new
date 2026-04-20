@@ -85,13 +85,14 @@ public class RobotContainer {
     /* Path follower */
     // private final SendableChooser<Command> autoChooser;
 
-    private final Command autoCommand() {
+    private final Command autoCommand(boolean moveBackwards) {
         return Commands.sequence(
-                drivetrain.applyRequest(() -> autoRobotCentricDrive.withVelocityX(-0.25)
-                        .withVelocityY(0).withRotationalRate(0)).withTimeout(2),
-                drivetrain.runOnce(() -> drivetrain.setControl(
+                moveBackwards ? drivetrain.applyRequest(() -> autoRobotCentricDrive.withVelocityX(-0.25)
+                        .withVelocityY(0).withRotationalRate(0)).withTimeout(2) : Commands.none(),
+                moveBackwards ? drivetrain.runOnce(() -> drivetrain.setControl(
                         autoRobotCentricDrive.withVelocityX(0)
-                                .withVelocityY(0).withRotationalRate(0))),
+                                .withVelocityY(0).withRotationalRate(0)))
+                        : Commands.none(),
                 shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
                 shooter.shootSequence(transfer).withTimeout(3),
@@ -111,7 +112,8 @@ public class RobotContainer {
 
         // SendableChooser<Command> autoChooser = new SendableChooser<>();
         autoChooser.setDefaultOption("Nothing", Commands.none());
-        autoChooser.addOption("Shoot Auto", autoCommand());
+        autoChooser.addOption("Shoot + Move Auto", autoCommand(true));
+        autoChooser.addOption("Only Shoot Auto", autoCommand(false));
 
         SmartDashboard.putData(autoChooser);
 
@@ -166,7 +168,7 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        controller1.leftTrigger().whileTrue(drivetrain.applyRequest(() -> brake));
+        // controller1.leftTrigger().whileTrue(drivetrain.applyRequest(() -> brake));
         controller1.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-controller1.getLeftY(), -controller1.getLeftX()))));
 
@@ -180,13 +182,15 @@ public class RobotContainer {
         controller1.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         // Slower drive toggle
-        controller1.leftBumper().onTrue(Commands.runOnce(() -> {
+        controller1.y().onTrue(Commands.runOnce(() -> {
             this.slowMode = !this.slowMode;
             this.MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) / (this.slowMode ? 4.25 : 1);
         }));
 
         controller2.rightBumper()
                 .whileTrue(shooter.shootSequence(transfer/* , intake */));
+
+        controller1.rightTrigger().whileTrue(shooter.shootSequence(transfer/* , intake */));
 
         // Feeding mode
         controller2.rightTrigger()
@@ -231,11 +235,20 @@ public class RobotContainer {
         // hood.holdCurrentPosition();
         // }));
 
+        controller1.leftTrigger().whileTrue(intake.runIntake(4.5));
         controller2.leftBumper().whileTrue(intake.runIntake(2.5));
         controller2.leftTrigger().whileTrue(intake.runIntake(4.5));
         controller2.y().whileTrue(intake.runIntake(11));
 
         controller2.povLeft().whileTrue(Commands.startEnd(() -> {
+            intake.setVoltage(-3);
+            transfer.setVoltage(-3);
+        }, () -> {
+            intake.setVoltage(0);
+            transfer.setVoltage(0);
+        }));
+
+        controller1.leftBumper().whileTrue(Commands.startEnd(() -> {
             intake.setVoltage(-3);
             transfer.setVoltage(-3);
         }, () -> {
