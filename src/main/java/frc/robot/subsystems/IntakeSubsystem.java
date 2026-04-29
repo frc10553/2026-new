@@ -31,6 +31,17 @@ public class IntakeSubsystem extends SubsystemBase {
         armMotor.getConfigurator().apply(pid);
     }
 
+    // For use in PathPlanner
+    public Command autoIntakeRun(TransferSubsystem transfer) {
+        return Commands.startEnd(() -> {
+            setVoltage(-3);
+            transfer.setVoltage(-3);
+        }, () -> {
+            setVoltage(0);
+            transfer.setVoltage(0);
+        });
+    }
+
     public void moveWithPID(double rotations) {
         final PositionVoltage pidRequest = new PositionVoltage(0).withSlot(0);
         armMotor.setControl(pidRequest.withPosition(rotations));

@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -71,7 +72,7 @@ public class RobotContainer {
     private final CommandXboxController controller1 = new CommandXboxController(0);
     private final CommandXboxController controller2 = new CommandXboxController(1);
 
-    SendableChooser<Command> autoChooser = new SendableChooser<>();
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     // Subsystems
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -98,7 +99,10 @@ public class RobotContainer {
                 shooter.shootSequence(transfer).withTimeout(3),
                 Commands.waitSeconds(1),
                 shooter.shootSequence(transfer).withTimeout(3));
+    }
 
+    Command shootDuringPath() {
+        return shooter.shootSequence(transfer);
     }
 
     public RobotContainer() {
@@ -110,13 +114,7 @@ public class RobotContainer {
         // autoChooser = AutoBuilder.buildAutoChooser("Tests");
         // SmartDashboard.putData("Auto Mode", autoChooser);
 
-        // SendableChooser<Command> autoChooser = new SendableChooser<>();
-        autoChooser.setDefaultOption("Nothing", Commands.none());
-        autoChooser.addOption("Shoot + Move Auto", autoCommand(true));
-        autoChooser.addOption("Only Shoot Auto", autoCommand(false));
-
-        SmartDashboard.putData(autoChooser);
-
+        configureAutos();
         configureBindings();
 
         // Warmup PathPlanner to avoid Java pauses
@@ -137,6 +135,21 @@ public class RobotContainer {
                     intake.isConnected() /* && hood.isConnected() */ && shooter.isConnected()
                             && transfer.isConnected() && drivetrain.isConnected());
         }));
+
+    }
+
+    private void configureAutos() {
+        NamedCommands.registerCommand("autoIntakeRun", intake.autoIntakeRun(transfer));
+        NamedCommands.registerCommand("shootDuringPath", shootDuringPath());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        // SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+        autoChooser.setDefaultOption("Nothing", Commands.none());
+        autoChooser.addOption("Shoot + Move Auto", autoCommand(true));
+        autoChooser.addOption("Only Shoot Auto", autoCommand(false));
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void configureBindings() {

@@ -29,7 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     private final SparkMax feeder;
-    //private final double defaultSpeed = 0.9;
+    // private final double defaultSpeed = 0.9;
     // private static double kMaxVelocity = 1.75;
     // private static double kMaxAcceleration = 0.75;
     // private static final double kP = 1.3;
@@ -39,16 +39,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // private final PIDController leftController = new PIDController(kP, kI, kD);
 
-
     // constructor
     public ShooterSubsystem() {
 
         leftMotor = new TalonFX(Constants.CanIDs.SHOOTER_LEFT_MOTOR);
         rightMotor = new TalonFX(Constants.CanIDs.SHOOTER_RIGHT_MOTOR);
         feeder = new SparkMax(Constants.CanIDs.SHOOTER_FEEDER, MotorType.kBrushless);
-        
+
         // leftController.setTolerance(100);
-        
+
         var motorOutputConfigs = new MotorOutputConfigs();
         motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
@@ -60,11 +59,11 @@ public class ShooterSubsystem extends SubsystemBase {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kS = 0;
         slot0Configs.kV = 0.2;
-        //3
+        // 3
         slot0Configs.kP = 3;
-        //0
+        // 0
         slot0Configs.kI = 0;
-        //0.35
+        // 0.35
         slot0Configs.kD = 0.35;
 
         var currentLimits = new CurrentLimitsConfigs();
@@ -78,41 +77,40 @@ public class ShooterSubsystem extends SubsystemBase {
 
         rightMotor.getConfigurator().apply(configs);
         leftMotor.getConfigurator().apply(configs.withMotorOutput(invertedMotorOutputConfigs));
-        
+
         leftMotor.setControl(new CoastOut());
         rightMotor.setControl(new CoastOut());
-
 
         SmartDashboard.putNumber("activeShooterVelocity", rightMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Shooter RPS", 60);
     }
 
     public void startMotor(boolean feeding) {
-        if(feeding){
+        if (feeding) {
             rightMotor.setControl(new VelocityVoltage(-75));
             leftMotor.setControl(new VelocityVoltage(-75));
 
-        }else{
+        } else {
             leftMotor.setControl(new VelocityVoltage(-SmartDashboard.getNumber("Shooter RPS", 60)));
             rightMotor.setControl(new VelocityVoltage(-SmartDashboard.getNumber("Shooter RPS", 60)));
         }
     }
 
     // public void setTargetRPM(double rpm){
-    //     targetRPM = rpm;
+    // targetRPM = rpm;
     // }
 
     // public void stop(){
-    //     targetRPM = 0;
+    // targetRPM = 0;
     // }
 
-    public double getCurrentRPM(){
+    public double getCurrentRPM() {
         // TODO get actual encoder value
         return 0;
     }
 
     // public boolean atSpeed(){
-    //     return Math.abs(getCurrentRPM()-targetRPM)<100;
+    // return Math.abs(getCurrentRPM()-targetRPM)<100;
     // }
 
     public void startFeeder(boolean crossFielding) {
@@ -129,29 +127,28 @@ public class ShooterSubsystem extends SubsystemBase {
         feeder.set(0);
     }
 
-    public Command shootSequence(TransferSubsystem transfer/*, IntakeSubsystem intake*/) {
+    public Command shootSequence(TransferSubsystem transfer/* , IntakeSubsystem intake */) {
         return Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(() -> startMotor(false), this),
-                // wait for motors to get up to speed
-                Commands.waitSeconds(1.5),
-                Commands.runOnce(() -> {
-                    startFeeder(false);
-                })),
-            
-            // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
-            //     Commands.runOnce(() -> intake.setVoltage(2.5)), 
-            //     Commands.waitSeconds(1), 
-            //     Commands.runOnce(() -> intake.setVoltage(4.5)),
-            //     Commands.waitSeconds(1)
-            // )),
+                Commands.sequence(
+                        Commands.runOnce(() -> startMotor(false), this),
+                        // wait for motors to get up to speed
+                        Commands.waitSeconds(1.5),
+                        Commands.runOnce(() -> {
+                            startFeeder(false);
+                        })),
 
-            Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
-                Commands.runOnce(() -> transfer.setVoltage(9)), 
-                Commands.waitSeconds(1), 
-                Commands.runOnce(() -> transfer.setVoltage(5)),
-                Commands.waitSeconds(1)
-            )))
+                // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+                // Commands.runOnce(() -> intake.setVoltage(2.5)),
+                // Commands.waitSeconds(1),
+                // Commands.runOnce(() -> intake.setVoltage(4.5)),
+                // Commands.waitSeconds(1)
+                // )),
+
+                Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+                        Commands.runOnce(() -> transfer.setVoltage(9)),
+                        Commands.waitSeconds(1),
+                        Commands.runOnce(() -> transfer.setVoltage(5)),
+                        Commands.waitSeconds(1))))
 
                 // still stops the motors even if this exits before the waitSeconds finishes
                 // (from what I understand)
@@ -159,33 +156,32 @@ public class ShooterSubsystem extends SubsystemBase {
                     stopMotor();
                     stopFeeder();
                     transfer.stopMotor();
-                    //intake.setVoltage(0);
+                    // intake.setVoltage(0);
                 });
     }
 
-    public Command feedingSequence(TransferSubsystem transfer/*, IntakeSubsystem intake*/) {
+    public Command feedingSequence(TransferSubsystem transfer/* , IntakeSubsystem intake */) {
         return Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(() -> startMotor(true), this),
-                // wait for motors to get up to speed
-                Commands.waitSeconds(1.5),
-                Commands.runOnce(() -> {
-                    startFeeder(true);
-                })),
-            
-            // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
-            //     Commands.runOnce(() -> intake.setVoltage(2.5)), 
-            //     Commands.waitSeconds(1), 
-            //     Commands.runOnce(() -> intake.setVoltage(4.5)),
-            //     Commands.waitSeconds(1)
-            // )),
+                Commands.sequence(
+                        Commands.runOnce(() -> startMotor(true), this),
+                        // wait for motors to get up to speed
+                        Commands.waitSeconds(1.5),
+                        Commands.runOnce(() -> {
+                            startFeeder(true);
+                        })),
 
-            Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
-                Commands.runOnce(() -> transfer.setVoltage(9)), 
-                Commands.waitSeconds(1), 
-                Commands.runOnce(() -> transfer.setVoltage(5)),
-                Commands.waitSeconds(1)
-            )))
+                // Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+                // Commands.runOnce(() -> intake.setVoltage(2.5)),
+                // Commands.waitSeconds(1),
+                // Commands.runOnce(() -> intake.setVoltage(4.5)),
+                // Commands.waitSeconds(1)
+                // )),
+
+                Commands.sequence(Commands.waitSeconds(2.0), Commands.repeatingSequence(
+                        Commands.runOnce(() -> transfer.setVoltage(9)),
+                        Commands.waitSeconds(1),
+                        Commands.runOnce(() -> transfer.setVoltage(5)),
+                        Commands.waitSeconds(1))))
 
                 // still stops the motors even if this exits before the waitSeconds finishes
                 // (from what I understand)
@@ -193,7 +189,7 @@ public class ShooterSubsystem extends SubsystemBase {
                     stopMotor();
                     stopFeeder();
                     transfer.stopMotor();
-                    //intake.setVoltage(0);
+                    // intake.setVoltage(0);
                 });
     }
 
