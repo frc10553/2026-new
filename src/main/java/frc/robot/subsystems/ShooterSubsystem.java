@@ -89,8 +89,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void startMotor(boolean feeding) {
         if(feeding){
-            rightMotor.setControl(new VelocityVoltage(-100));
-            leftMotor.setControl(new VelocityVoltage(-100));
+            rightMotor.setControl(new VelocityVoltage(-75));
+            leftMotor.setControl(new VelocityVoltage(-75));
 
         }else{
             leftMotor.setControl(new VelocityVoltage(-SmartDashboard.getNumber("Shooter RPS", 60)));
