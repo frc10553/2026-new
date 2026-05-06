@@ -1,15 +1,17 @@
-package com.orangeoverdrive;
+package com.orangeoverdrive.core;
+
+import com.orangeoverdrive.RobotContainer;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class RobotRoot extends TimedRobot {
+public class Robot extends TimedRobot {
   private Command selectedAutoCommand;
 
   private final RobotContainer robotContainer;
 
-  public RobotRoot() {
+  public Robot() {
     robotContainer = new RobotContainer();
   }
 
