@@ -1,7 +1,7 @@
-package frc.robot.subsystems;
+package com.orangeoverdrive.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import com.orangeoverdrive.Constants;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.orangeoverdrive.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import com.orangeoverdrive.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX armMotor;
