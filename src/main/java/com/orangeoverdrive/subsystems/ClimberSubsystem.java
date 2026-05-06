@@ -56,4 +56,8 @@ public class ClimberSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Climber Rotations", getEncoderPosition());
     }
+
+    public boolean isConnected() {
+        return motor.isConnected() && motor.isAlive();
+    }
 }

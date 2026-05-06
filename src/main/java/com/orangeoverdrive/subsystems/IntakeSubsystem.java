@@ -93,7 +93,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean isConnected() {
         SparkBase.Faults intakeFaults = intakeWheelMotor.getFaults();
-        if (!intakeFaults.can && !intakeFaults.motorType) {
+        if (intakeFaults.can || intakeFaults.motorType) {
             return false;
         }
 

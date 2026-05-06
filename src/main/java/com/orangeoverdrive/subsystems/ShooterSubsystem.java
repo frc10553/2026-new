@@ -209,7 +209,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public boolean isConnected() {
         SparkBase.Faults feederFaults = feeder.getFaults();
-        if (!feederFaults.can && !feederFaults.motorType) {
+        if (feederFaults.can || feederFaults.motorType) {
             return false;
         }
 
