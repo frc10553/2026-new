@@ -114,31 +114,6 @@ public class Controllers {
     aux.b().onFalse(Commands.runOnce(() -> {
       shooter.stopMotor();
     }));
-    // hood shooting not as far
-    // aux.a().onTrue(Commands.runOnce(() -> {
-    // hood.setHoodPreset(HoodPositions.NEAR_SHOT);
-    // }));
-
-    // // hood shooting far
-    // aux.b().onTrue(Commands.runOnce(() -> {
-    // hood.setHoodPreset(HoodPositions.FAR_SHOT);
-    // }));
-
-    // Manual hood adjust — hold D-pad for voltage, release to lock position with
-    // PID
-    // aux.povUp().onTrue(Commands.runOnce(() -> {
-    // hood.setVoltage(0.75);
-    // }));
-    // aux.povUp().onFalse(Commands.runOnce(() -> {
-    // hood.holdCurrentPosition();
-    // }));
-
-    // aux.povDown().onTrue(Commands.runOnce(() -> {
-    // hood.setVoltage(-0.75);
-    // }));
-    // aux.povDown().onFalse(Commands.runOnce(() -> {
-    // hood.holdCurrentPosition();
-    // }));
 
     aux.leftBumper().whileTrue(intake.runIntake(2.5));
     aux.leftTrigger().whileTrue(intake.runIntake(4.5));
