@@ -6,11 +6,6 @@ package com.orangeoverdrive;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.commands.FollowPathCommand;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -32,12 +27,6 @@ public class RobotContainer {
     private double MaxSpeed = DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final DrivetrainTelemetry logger = new DrivetrainTelemetry(MaxSpeed);
 
-    private final SwerveRequest.RobotCentric autoRobotCentricDrive = new SwerveRequest.RobotCentric()
-            .withDeadband(0).withRotationalDeadband(0)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
     // Subsystems
     public final Drivetrain drivetrain = DrivetrainConstants.createDrivetrain();
     public final ShooterSubsystem shooter;
@@ -46,23 +35,21 @@ public class RobotContainer {
     // public final HoodSubsystem hood;
 
     private final Controllers controllers = new Controllers();
+    private final Autos autos;
 
     public RobotContainer() {
         shooter = new ShooterSubsystem();
         intake = new IntakeSubsystem();
         transfer = new TransferSubsystem();
+        autos = new Autos(drivetrain, shooter, transfer);
         // hood = new HoodSubsystem();
-
-        autoChooser.setDefaultOption("Nothing", Commands.none());
-        autoChooser.addOption("Shoot Auto", autoCommand());
-        SmartDashboard.putData(autoChooser);
 
         controllers.configureDrive(drivetrain);
         controllers.configureAux(shooter, intake, transfer);
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Warmup PathPlanner to avoid Java pauses
-        CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+        autos.warmupPathPlanner();
 
         SmartDashboard.putBoolean("Motor Status", true);
 
@@ -74,20 +61,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
-
-    private Command autoCommand() {
-        return Commands.sequence(
-                drivetrain.applyRequest(() -> autoRobotCentricDrive.withVelocityX(-0.25)
-                        .withVelocityY(0).withRotationalRate(0)).withTimeout(2),
-                drivetrain.runOnce(() -> drivetrain.setControl(
-                        autoRobotCentricDrive.withVelocityX(0)
-                                .withVelocityY(0).withRotationalRate(0))),
-                shooter.shootSequence(transfer).withTimeout(3),
-                Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3),
-                Commands.waitSeconds(1),
-                shooter.shootSequence(transfer).withTimeout(3));
+        return autos.getAutonomousCommand();
     }
 }
