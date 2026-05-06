@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import com.orangeoverdrive.generated.LimelightHelpers;
 import com.orangeoverdrive.generated.drivetrain.Drivetrain;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainConstants;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainTelemetry;
