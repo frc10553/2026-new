@@ -14,7 +14,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainConstants;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainCore;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +36,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.RobotCentric robotCentricDriveRequest = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     private final SwerveRequest.PointWheelsAt pointAtRequest = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.Idle idleRequest = new SwerveRequest.Idle();
@@ -85,6 +88,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 .withVelocityX(velocityX)
                 .withVelocityY(velocityY)
                 .withRotationalRate(rotationalRate);
+    }
+
+    public Pose2d getPose() {
+        return drivetrainCore.getState().Pose;
+    }
+
+    public void resetPose(Pose2d pose) {
+        drivetrainCore.resetPose(pose);
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return drivetrainCore.getState().Speeds;
+    }
+
+    public void applyPathSpeeds(
+            ChassisSpeeds speeds,
+            double[] robotRelativeForcesXNewtons,
+            double[] robotRelativeForcesYNewtons) {
+        drivetrainCore.setControl(pathApplyRobotSpeeds
+                .withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+                .withWheelForceFeedforwardsX(robotRelativeForcesXNewtons)
+                .withWheelForceFeedforwardsY(robotRelativeForcesYNewtons));
     }
 
     public Command pointWheelsAt(DoubleSupplier forward, DoubleSupplier left) {
