@@ -9,33 +9,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import com.orangeoverdrive.generated.drivetrain.DrivetrainTelemetry;
 import com.orangeoverdrive.subsystems.DrivetrainSubsystem;
 import com.orangeoverdrive.subsystems.IntakeSubsystem;
 import com.orangeoverdrive.subsystems.ShooterSubsystem;
 import com.orangeoverdrive.subsystems.TransferSubsystem;
 
 public class RobotContainer {
-    private final DrivetrainTelemetry logger = new DrivetrainTelemetry(DrivetrainSubsystem.MAX_SPEED_METERS_PER_SECOND);
-
     // Subsystems
     public final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem();
-    public final ShooterSubsystem shooter;
-    public final IntakeSubsystem intake;
-    public final TransferSubsystem transfer;
+    public final ShooterSubsystem shooter = new ShooterSubsystem();
+    public final IntakeSubsystem intake = new IntakeSubsystem();
+    public final TransferSubsystem transfer = new TransferSubsystem();
 
     private final Controllers controllers = new Controllers();
-    private final Autos autos;
+    private final Autos autos = new Autos(drivetrain, shooter, transfer);
 
     public RobotContainer() {
-        shooter = new ShooterSubsystem();
-        intake = new IntakeSubsystem();
-        transfer = new TransferSubsystem();
-        autos = new Autos(drivetrain, shooter, transfer);
-
         controllers.configureDrive(drivetrain);
         controllers.configureAux(shooter, intake, transfer);
-        drivetrain.registerTelemetry(logger::telemeterize);
 
         // Warmup PathPlanner to avoid Java pauses
         autos.warmupPathPlanner();

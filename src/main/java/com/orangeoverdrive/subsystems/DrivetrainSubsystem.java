@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainConstants;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainCore;
+import com.orangeoverdrive.generated.drivetrain.DrivetrainTelemetry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +31,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double ROTATION_DEADBAND_RATIO = 0.1;
 
     private final DrivetrainCore drivetrainCore;
+    private final DrivetrainTelemetry logger = new DrivetrainTelemetry(MAX_SPEED_METERS_PER_SECOND);
 
     private final double maxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     private final SwerveRequest.FieldCentric fieldCentricDriveRequest = new SwerveRequest.FieldCentric()
@@ -46,6 +48,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public DrivetrainSubsystem() {
         drivetrainCore = DrivetrainConstants.createDrivetrain();
+        drivetrainCore.registerTelemetry(logger::telemeterize);
     }
 
     public Command applyRequest(SwerveRequest request) {
