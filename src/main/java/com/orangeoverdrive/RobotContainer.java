@@ -4,28 +4,22 @@
 
 package com.orangeoverdrive;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import com.orangeoverdrive.generated.drivetrain.Drivetrain;
-import com.orangeoverdrive.generated.drivetrain.DrivetrainConstants;
 import com.orangeoverdrive.generated.drivetrain.DrivetrainTelemetry;
+import com.orangeoverdrive.subsystems.DrivetrainSubsystem;
 import com.orangeoverdrive.subsystems.IntakeSubsystem;
 import com.orangeoverdrive.subsystems.ShooterSubsystem;
 import com.orangeoverdrive.subsystems.TransferSubsystem;
 
 public class RobotContainer {
-    // Maximum speed
-    // (gets divided by 4 for slow mode)
-    private double MaxSpeed = DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private final DrivetrainTelemetry logger = new DrivetrainTelemetry(MaxSpeed);
+    private final DrivetrainTelemetry logger = new DrivetrainTelemetry(DrivetrainSubsystem.MAX_SPEED_METERS_PER_SECOND);
 
     // Subsystems
-    public final Drivetrain drivetrain = DrivetrainConstants.createDrivetrain();
+    public final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem();
     public final ShooterSubsystem shooter;
     public final IntakeSubsystem intake;
     public final TransferSubsystem transfer;

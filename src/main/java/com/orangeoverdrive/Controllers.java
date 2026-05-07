@@ -1,78 +1,58 @@
 package com.orangeoverdrive;
 
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.orangeoverdrive.generated.drivetrain.Drivetrain;
-import com.orangeoverdrive.generated.drivetrain.DrivetrainConstants;
+import com.orangeoverdrive.subsystems.DrivetrainSubsystem;
 import com.orangeoverdrive.subsystems.IntakeSubsystem;
 import com.orangeoverdrive.subsystems.ShooterSubsystem;
 import com.orangeoverdrive.subsystems.TransferSubsystem;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class Controllers {
-  private double MaxSpeed = DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-  private boolean slowMode = false;
   private boolean robotCentric = false;
 
   private final CommandXboxController driver;
   private final CommandXboxController aux;
-
-  private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-  private final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   public Controllers() {
     driver = new CommandXboxController(0);
     aux = new CommandXboxController(1);
   }
 
-  private void applyDriveDefaultCommand(Drivetrain drivetrain) {
+  private void updateDriveDefaultCommand(DrivetrainSubsystem drivetrain) {
     if (robotCentric) {
       drivetrain.setDefaultCommand(
-          drivetrain.applyRequest(() -> robotCentricDrive.withVelocityX(-driver.getLeftY() * MaxSpeed)
-              .withVelocityY(-driver.getLeftX() * MaxSpeed)
-              .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
+          drivetrain.updateRobotCentricDrive(
+              () -> -driver.getLeftY(),
+              () -> -driver.getLeftX(),
+              () -> -driver.getRightX()));
     } else {
       drivetrain.setDefaultCommand(
-          drivetrain.applyRequest(() -> fieldCentricDrive.withVelocityX(-driver.getLeftY() * MaxSpeed)
-              .withVelocityY(-driver.getLeftX() * MaxSpeed)
-              .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
+          drivetrain.updateFieldCentricDrive(
+              () -> -driver.getLeftY(),
+              () -> -driver.getLeftX(),
+              () -> -driver.getRightX()));
     }
   }
 
-  public void configureDrive(Drivetrain drivetrain) {
+  public void configureDrive(DrivetrainSubsystem drivetrain) {
     // +X is forward
     // +Y is left
     // This is the driving control
-    applyDriveDefaultCommand(drivetrain);
+    updateDriveDefaultCommand(drivetrain);
 
     driver.povUp().onTrue(Commands.runOnce(() -> {
       robotCentric = !robotCentric;
-      applyDriveDefaultCommand(drivetrain);
+      updateDriveDefaultCommand(drivetrain);
     }));
 
     // Idle motors when disabled
-    final var idle = new SwerveRequest.Idle();
-    RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+    RobotModeTriggers.disabled().whileTrue(drivetrain.idle().ignoringDisable(true));
 
-    driver.leftTrigger().whileTrue(drivetrain.applyRequest(() -> brake));
-    driver.b().whileTrue(drivetrain.applyRequest(
-        () -> point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+    driver.leftTrigger().whileTrue(drivetrain.brake());
+    driver.b().whileTrue(drivetrain.pointWheelsAt(() -> -driver.getLeftY(), () -> -driver.getLeftX()));
 
     // Process sysids
     driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -84,10 +64,7 @@ public class Controllers {
     driver.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     // Slower drive toggle
-    driver.leftBumper().onTrue(Commands.runOnce(() -> {
-      slowMode = !slowMode;
-      MaxSpeed = DrivetrainConstants.kSpeedAt12Volts.in(MetersPerSecond) / (slowMode ? 4.25 : 1);
-    }));
+    driver.leftBumper().onTrue(Commands.runOnce(drivetrain::toggleSlowMode, drivetrain));
   }
 
   public void configureAux(

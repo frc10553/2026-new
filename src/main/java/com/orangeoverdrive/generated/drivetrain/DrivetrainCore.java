@@ -38,7 +38,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
-public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
+public class DrivetrainCore extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -131,7 +131,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
      * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
      * @param modules             Constants for each specific module
      */
-    public Drivetrain(
+    public DrivetrainCore(
             SwerveDrivetrainConstants drivetrainConstants,
             SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
@@ -156,7 +156,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
      *                                CAN FD, and 100 Hz on CAN 2.0.
      * @param modules                 Constants for each specific module
      */
-    public Drivetrain(
+    public DrivetrainCore(
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             SwerveModuleConstants<?, ?, ?>... modules) {
@@ -194,7 +194,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
      *                                  and radians
      * @param modules                   Constants for each specific module
      */
-    public Drivetrain(
+    public DrivetrainCore(
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             Matrix<N3, N1> odometryStandardDeviation,

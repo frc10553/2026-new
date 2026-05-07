@@ -212,8 +212,8 @@ public class DrivetrainConstants {
          * Creates a CommandSwerveDrivetrain instance.
          * This should only be called once in your robot program,.
          */
-        public static Drivetrain createDrivetrain() {
-                return new Drivetrain(
+        public static DrivetrainCore createDrivetrain() {
+                return new DrivetrainCore(
                                 DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
         }
 
